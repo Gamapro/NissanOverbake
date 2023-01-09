@@ -5,9 +5,7 @@
 
 <div class="card my-4">
     <div class="card-body">
-        DataTables is a third party plugin that is used to generate the demo table below. For more information about DataTables, please visit the
-        <a target="_blank" href="https://datatables.net/">official DataTables documentation</a>
-        .
+        <h1> Nissan Overbake Metrics Users </h1>
     </div>
 </div>
 <div class="card mb-4">
@@ -64,7 +62,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <input id="idInput" type="hidden" value="0"/>
+                <input id="idInput" type="hidden" value="0" />
                 <div class="row mb-3">
                     <div class="col-sm-6">
                         <label for="firstNameModalLabel" class="form-label">First name</label>
@@ -106,19 +104,32 @@
                         <option value="2">Admin</option>
                     </select>
                 </div>
-
+                <div class="mb-3">
+                    <div class="alert alert-danger" role="alert" id="alert">
+                    </div>
+                </div>
                 <div class="modal-footer d-flex justify-content-md-evenly">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-primary">Save</button>
+                    <button type="button" class="btn btn-primary" onclick="registerUser()">Save</button>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
+<div aria-live="polite" aria-atomic="true" style="position: relative; min-height: 200px;">
+    <div class="toast text-bg-primary border-0" id="toast" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="2000" style="position: absolute; top: 0; right: 0;">
+        <div class="d-flex">
+            <div class="toast-body" id="toastText">
+            </div>
+        </div>
+    </div>
+</div>
 
-@section scripts{
-    <script>
+    @section scripts{
+        <script>
+
+        var row = null;
 
         var rand = function () {
             return Math.random().toString(36).substr(2);
@@ -126,7 +137,7 @@
 
         var token = function () {
             return rand() + '-' + rand() + '-' + rand() + '-' + rand();
-        };
+            };
 
         jQuery.ajax({
             url: "@Url.Action("ListUsers","Home")",
@@ -134,10 +145,10 @@
             datatype: "json",
             contentType: "application/json; charset=utf-8",
             success: function (data) {
-                var texto = 'hola';
                 console.log(data);
             }
         });
+
         var table = $("#userDataTable").DataTable({
             responsive: true,
             ordering: true,
@@ -192,14 +203,50 @@
 
         function registerUser() {
 
-            var user = {
+            var modifiedUser = {
                 "Id":$("#idInput").val(),
-                "Name":$("#firstNameInput").val(),
-                "NastName":$("#lastNameInput").val(),
-                "Username":$("#usernameInput").val(),
-                "Password":$("#passwordInput").val(),
-                "UserTypeId":$("#usertypeSelect").val(),
+                "Username": $("#usernameInput").val(),
+                "Name": $("#firstNameInput").val(),
+                "LastName":$("#lastNameInput").val(),
+                "Password": $("#passwordInput").val(),
+                "Token":"comolomueveesamuchachota",
+                "UserTypeId": {
+                    "Id": $("#usertypeSelect").val(),
+                    "Usertype": $("#usertypeSelect").val() == 1 ? "User" : "Admin",
+                }
             }
+
+            jQuery.ajax({
+                url: "@Url.Action("insertOrUpdateUser", "Home")",
+                type: "POST",
+                data: JSON.stringify({ user: modifiedUser }),
+                datatype: "json",
+                contentType: "application/json; charset=utf-8",
+                success: function (data) {
+                    console.log(data.excecuted, data.message);
+                    if (data.excecuted == true) {
+                        $("#registerUserModal").modal("hide");
+                        $("#toastText").text(data.message);
+                        $("#toast").toast("show");
+
+                        console.log(modifiedUser);
+
+                        if (modifiedUser.Id == 0) {
+                            table.row.add(modifiedUser).draw(false);
+                        } else {
+                            table.row(row).data(modifiedUser).draw(false);
+                            row = null;
+                        }
+
+                    } else {
+                        $("#alert").text(data.message);
+                        $("#alert").show();
+                    }
+                },
+                error: function (error) {
+                    console.log(error);
+                },
+            });
 
         }
 
@@ -210,16 +257,17 @@
             $("#usernameInput").val(json == null ? "" : json.Username);
             $("#passwordInput").val(json == null ? "" : json.Password);
             $("#usertypeSelect").val(json == null ? 1 : json.UserTypeId.Usertype == "Admin" ? 2 : 1)
+            $("#alert").hide();
             $("#registerUserModal").modal("show");
         }
 
         $("#userDataTable tbody").on("click", '.editButton', function () {
-            var row = $(this).closest("tr");
+            row = $(this).closest("tr");
             var userInfo = table.row(row).data();
             console.log(userInfo);
             modalRegisterUser(userInfo);
         });
 
-    </script>
-}
+        </script>
+    }
 
