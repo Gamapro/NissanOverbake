@@ -1,0 +1,225 @@
+﻿
+@{
+    ViewBag.Title = "UsersDashboard";
+}
+
+<div class="card my-4">
+    <div class="card-body">
+        DataTables is a third party plugin that is used to generate the demo table below. For more information about DataTables, please visit the
+        <a target="_blank" href="https://datatables.net/">official DataTables documentation</a>
+        .
+    </div>
+</div>
+<div class="card mb-4">
+    <div class="card-header">
+        <i class="fas fa-table me-1"></i>
+        Users Information
+        <button type="button" class="btn btn-success mid-right">
+            Excel
+            <i class="fas fa-file-excel"></i>
+        </button>
+        <button type="button" class="btn btn-dark mid-right" onclick="modalRegisterUser()">
+            Add
+            <i class="fas fa-user"></i>
+        </button>
+    </div>
+    <div class="card-body">
+        <table id="userDataTable" class="display cell-border compact row-border stripe hover order-column">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>User Type</th>
+                    <th>User</th>
+                    <th>Password</th>
+                    <th>Name</th>
+                    <th>Last Name</th>
+                    <th>Token</th>
+                    <th>Edit</th>
+                </tr>
+            </thead>
+            <tfoot>
+                <tr>
+                    <th>ID</th>
+                    <th>User Type</th>
+                    <th>User</th>
+                    <th>Password</th>
+                    <th>Name</th>
+                    <th>Last Name</th>
+                    <th>Token</th>
+                    <th>Edit</th>
+                </tr>
+            </tfoot>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="registerUserModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <input id="idInput" type="hidden" value="0"/>
+                <div class="row mb-3">
+                    <div class="col-sm-6">
+                        <label for="firstNameModalLabel" class="form-label">First name</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-id-badge"></i></span>
+                            <input type="text" class="form-control" id="firstNameInput" placeholder="....">
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <label for="lastNameModalLabel" class="form-label">Last name</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-id-badge"></i></span>
+                            <input type="text" class="form-control" id="lastNameInput" placeholder="....">
+                        </div>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label for="usernameModalLabel" class="form-label">Username</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fas fa-user-circle"></i></span>
+                        <input type="text" class="form-control" id="usernameInput" placeholder="....">
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label for="passwordModalLabel" class="form-label">Password</label>
+                    <div class="input-group ">
+                        <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                        <input name="password" type="password" value="" class="input form-control" id="passwordInput" placeholder="********" aria-label="password" aria-describedby="basic-addon1" />
+                        <span class="input-group-text" onclick="password_show_hide();">
+                            <i class="fas fa-eye" id="show_eye"></i>
+                            <i class="fas fa-eye-slash d-none" id="hide_eye"></i>
+                        </span>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label for="userTypeModalLabel" class="form-label">User type</label>
+                    <select class="form-select" id="usertypeSelect">
+                        <option selected value="1">User</option>
+                        <option value="2">Admin</option>
+                    </select>
+                </div>
+
+                <div class="modal-footer d-flex justify-content-md-evenly">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section scripts{
+    <script>
+
+        var rand = function () {
+            return Math.random().toString(36).substr(2);
+        };
+
+        var token = function () {
+            return rand() + '-' + rand() + '-' + rand() + '-' + rand();
+        };
+
+        jQuery.ajax({
+            url: "@Url.Action("ListUsers","Home")",
+            type: "GET",
+            datatype: "json",
+            contentType: "application/json; charset=utf-8",
+            success: function (data) {
+                var texto = 'hola';
+                console.log(data);
+            }
+        });
+        var table = $("#userDataTable").DataTable({
+            responsive: true,
+            ordering: true,
+            fixedColumns: true,
+            scrollY: true,
+            lengthMenu: [5, 10, 15, 20, 50, 100],
+            "ajax": {
+                url: "@Url.Action("ListUsers","Home")",
+                type: "GET",
+                datatype: "json",
+                contentType: "application/json; charset=utf-8",
+            },
+            "columns": [
+                { "data": "Id" },
+                {
+                    "data": "UserTypeId.Usertype",
+                    "render": function (type) {
+                        return type == "User" ? '<span class="badge rounded-pill bg-primary">User</span>'
+                            : '<span class="badge rounded-pill bg-danger">Admin</span>';
+                    }
+                },
+                { "data": "Username" },
+                { "data": "Password" },
+                { "data": "Name" },
+                { "data": "LastName" },
+                { "data": "Token" },
+                {
+                    "defaultContent":
+                        '<button type="button" class="editButton btn btn-info btn-sm p-2 mx-1"><i class="fas fa-pen"></i></button>' +
+                        '<button type="button" class="btn btn-danger btn-sm p-2 mx-1"><i class="fas fa-trash"></i></button>',
+                    "orderable": false,
+                    "searchable": false,
+                }
+            ]
+        });
+
+        function password_show_hide() {
+            var x = document.getElementById("passwordInput");
+            var show_eye = document.getElementById("show_eye");
+            var hide_eye = document.getElementById("hide_eye");
+            hide_eye.classList.remove("d-none");
+            if (x.type === "password") {
+                x.type = "text";
+                show_eye.style.display = "none";
+                hide_eye.style.display = "block";
+            } else {
+                x.type = "password";
+                show_eye.style.display = "block";
+                hide_eye.style.display = "none";
+            }
+        }
+
+        function registerUser() {
+
+            var user = {
+                "Id":$("#idInput").val(),
+                "Name":$("#firstNameInput").val(),
+                "NastName":$("#lastNameInput").val(),
+                "Username":$("#usernameInput").val(),
+                "Password":$("#passwordInput").val(),
+                "UserTypeId":$("#usertypeSelect").val(),
+            }
+
+        }
+
+        function modalRegisterUser(json) {
+            $("#idInput").val(json == null ? 0 : json.Id);
+            $("#firstNameInput").val(json == null ? "" : json.Name);
+            $("#lastNameInput").val(json == null ? "" : json.LastName);
+            $("#usernameInput").val(json == null ? "" : json.Username);
+            $("#passwordInput").val(json == null ? "" : json.Password);
+            $("#usertypeSelect").val(json == null ? 1 : json.UserTypeId.Usertype == "Admin" ? 2 : 1)
+            $("#registerUserModal").modal("show");
+        }
+
+        $("#userDataTable tbody").on("click", '.editButton', function () {
+            var row = $(this).closest("tr");
+            var userInfo = table.row(row).data();
+            console.log(userInfo);
+            modalRegisterUser(userInfo);
+        });
+
+    </script>
+}
+
