@@ -1,0 +1,108 @@
+﻿
+@{
+    ViewBag.Title = "OverbakeLogDashboard";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid px-4">
+    <h1 class="mt-4">Overbake Dashboard</h1>
+    <ol class="breadcrumb mb-4">
+        <li class="breadcrumb-item">OVERBAKE CONTROL</li>
+        <li class="breadcrumb-item active">Dashboard</li>
+    </ol>
+    <div class="card mb-4 container-fluid">
+        <div class="card-header d-flex align-items-center justify-content-between">
+            <div>
+                <i class="fas fa-table me-1"></i>
+                Users Information
+            </div>
+            <div>
+                <button type="button" class="btn btn-success mid-right">
+                    Excel
+                    <i class="fas fa-file-excel"></i>
+                </button>
+                <button type="button" class="btn btn-dark mid-right" onclick="modalRegisterUser()">
+                    Add
+                    <i class="fas fa-user"></i>
+                </button>
+            </div>
+        </div>
+        <div class="card-body">
+            <table id="userDataTable" class="display cell-border compact row-border stripe hover order-column">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Time</th>
+                        <th>Status</th>
+                        <th>Serial Number</th>
+                        <th>Plc ID</th>
+                        <th>Message</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tfoot>
+                    <tr>
+                        <th>ID</th>
+                        <th>Time</th>
+                        <th>Status</th>
+                        <th>Serial Number</th>
+                        <th>Plc ID</th>
+                        <th>Message</th>
+                        <th></th>
+                    </tr>
+                </tfoot>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+@section scripts{
+    <script>
+
+    var row = null;
+
+    jQuery.ajax({
+        url: "@Url.Action("ListOverbakeLogs", "Home")",
+        type: "GET",
+        datatype: "json",
+        contentType: "application/json; charset=utf-8",
+        success: function (data) {
+            console.log(data);
+        }
+    });
+
+    var table = $("#userDataTable").DataTable({
+        responsive: true,
+        ordering: true,
+        fixedColumns: true,
+        scrollY: true,
+        lengthMenu: [5, 10, 15, 20, 50, 100],
+        "ajax": {
+            url: "@Url.Action("ListOverbakeLogs", "Home")",
+            type: "GET",
+            datatype: "json",
+            contentType: "application/json; charset=utf-8",
+        },
+        "columns": [
+            { "data": "Id" },
+            { "data": "Time" },
+            { "data": "Status" },
+            { "data": "SerialNumber" },
+            { "data": "PlcId" },
+            { "data": "Message" },
+            {
+                "defaultContent":
+                    '<button type="button" class="editButton btn btn-info btn-sm p-2 mx-1"><i class="fas fa-pen"></i></button>' +
+                    '<button type="button" class="deleteButton btn btn-danger btn-sm p-2 mx-1"><i class="fas fa-trash"></i></button>',
+                "orderable": false,
+                "searchable": false,
+            }
+        ]
+    });
+
+    </script>
+
+}

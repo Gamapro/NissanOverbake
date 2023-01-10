@@ -3,53 +3,59 @@
     ViewBag.Title = "UsersDashboard";
 }
 
-<div class="card my-4">
-    <div class="card-body">
-        <h1> Nissan Overbake Metrics Users </h1>
-    </div>
-</div>
-<div class="card mb-4">
-    <div class="card-header">
-        <i class="fas fa-table me-1"></i>
-        Users Information
-        <button type="button" class="btn btn-success mid-right">
-            Excel
-            <i class="fas fa-file-excel"></i>
-        </button>
-        <button type="button" class="btn btn-dark mid-right" onclick="modalRegisterUser()">
-            Add
-            <i class="fas fa-user"></i>
-        </button>
-    </div>
-    <div class="card-body">
-        <table id="userDataTable" class="display cell-border compact row-border stripe hover order-column">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>User Type</th>
-                    <th>User</th>
-                    <th>Password</th>
-                    <th>Name</th>
-                    <th>Last Name</th>
-                    <th>Token</th>
-                    <th>Edit</th>
-                </tr>
-            </thead>
-            <tfoot>
-                <tr>
-                    <th>ID</th>
-                    <th>User Type</th>
-                    <th>User</th>
-                    <th>Password</th>
-                    <th>Name</th>
-                    <th>Last Name</th>
-                    <th>Token</th>
-                    <th>Edit</th>
-                </tr>
-            </tfoot>
-            <tbody>
-            </tbody>
-        </table>
+<div class="container-fluid px-4">
+    <h1 class="mt-4">Nissan Overbake Users</h1>
+    <ol class="breadcrumb mb-4">
+        <li class="breadcrumb-item">MANAGEMENT</li>
+        <li class="breadcrumb-item active">Users</li>
+    </ol>
+    <div class="card mb-4 container-fluid">
+        <div class="card-header d-flex align-items-center justify-content-between">
+            <div>
+                <i class="fas fa-table me-1"></i>
+                Users Information
+            </div>
+            <div>
+                <button type="button" class="btn btn-success mid-right">
+                    Excel
+                    <i class="fas fa-file-excel"></i>
+                </button>
+                <button type="button" class="btn btn-dark mid-right" onclick="modalRegisterUser()">
+                    Add
+                    <i class="fas fa-user"></i>
+                </button>
+            </div>
+        </div>
+        <div class="card-body">
+            <table id="userDataTable" class="display cell-border compact row-border stripe hover order-column">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>User Type</th>
+                        <th>User</th>
+                        <th>Password</th>
+                        <th>Name</th>
+                        <th>Last Name</th>
+                        <th>Token</th>
+                        <th>Edit</th>
+                    </tr>
+                </thead>
+                <tfoot>
+                    <tr>
+                        <th>ID</th>
+                        <th>User Type</th>
+                        <th>User</th>
+                        <th>Password</th>
+                        <th>Name</th>
+                        <th>Last Name</th>
+                        <th>Token</th>
+                        <th>Edit</th>
+                    </tr>
+                </tfoot>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
 
@@ -126,148 +132,189 @@
     </div>
 </div>
 
-    @section scripts{
-        <script>
+@section scripts{
+    <script>
 
-        var row = null;
+    var row = null;
 
-        var rand = function () {
-            return Math.random().toString(36).substr(2);
-        };
-
-        var token = function () {
-            return rand() + '-' + rand() + '-' + rand() + '-' + rand();
-            };
-
-        jQuery.ajax({
+    var table = $("#userDataTable").DataTable({
+        responsive: true,
+        ordering: true,
+        fixedColumns: true,
+        scrollY: true,
+        lengthMenu: [5, 10, 15, 20, 50, 100],
+        "ajax": {
             url: "@Url.Action("ListUsers","Home")",
             type: "GET",
             datatype: "json",
             contentType: "application/json; charset=utf-8",
-            success: function (data) {
-                console.log(data);
-            }
-        });
-
-        var table = $("#userDataTable").DataTable({
-            responsive: true,
-            ordering: true,
-            fixedColumns: true,
-            scrollY: true,
-            lengthMenu: [5, 10, 15, 20, 50, 100],
-            "ajax": {
-                url: "@Url.Action("ListUsers","Home")",
-                type: "GET",
-                datatype: "json",
-                contentType: "application/json; charset=utf-8",
-            },
-            "columns": [
-                { "data": "Id" },
-                {
-                    "data": "UserTypeId.Usertype",
-                    "render": function (type) {
-                        return type == "User" ? '<span class="badge rounded-pill bg-primary">User</span>'
-                            : '<span class="badge rounded-pill bg-danger">Admin</span>';
-                    }
-                },
-                { "data": "Username" },
-                { "data": "Password" },
-                { "data": "Name" },
-                { "data": "LastName" },
-                { "data": "Token" },
-                {
-                    "defaultContent":
-                        '<button type="button" class="editButton btn btn-info btn-sm p-2 mx-1"><i class="fas fa-pen"></i></button>' +
-                        '<button type="button" class="btn btn-danger btn-sm p-2 mx-1"><i class="fas fa-trash"></i></button>',
-                    "orderable": false,
-                    "searchable": false,
+        },
+        "columns": [
+            { "data": "Id" },
+            {
+                "data": "UserTypeId.Usertype",
+                "render": function (type) {
+                    return type == "User" ? '<span class="badge rounded-pill bg-primary">User</span>'
+                        : '<span class="badge rounded-pill bg-danger">Admin</span>';
                 }
-            ]
-        });
+            },
+            { "data": "Username" },
+            { "data": "Password" },
+            { "data": "Name" },
+            { "data": "LastName" },
+            { "data": "Token" },
+            {
+                "defaultContent":
+                    '<button type="button" class="editButton btn btn-info btn-sm p-2 mx-1"><i class="fas fa-pen"></i></button>' +
+                    '<button type="button" class="deleteButton btn btn-danger btn-sm p-2 mx-1"><i class="fas fa-trash"></i></button>',
+                "orderable": false,
+                "searchable": false,
+            }
+        ]
+    });
 
-        function password_show_hide() {
-            var x = document.getElementById("passwordInput");
-            var show_eye = document.getElementById("show_eye");
-            var hide_eye = document.getElementById("hide_eye");
-            hide_eye.classList.remove("d-none");
-            if (x.type === "password") {
-                x.type = "text";
-                show_eye.style.display = "none";
-                hide_eye.style.display = "block";
-            } else {
-                x.type = "password";
-                show_eye.style.display = "block";
-                hide_eye.style.display = "none";
+    function password_show_hide() {
+        var x = document.getElementById("passwordInput");
+        var show_eye = document.getElementById("show_eye");
+        var hide_eye = document.getElementById("hide_eye");
+        hide_eye.classList.remove("d-none");
+        if (x.type === "password") {
+            x.type = "text";
+            show_eye.style.display = "none";
+            hide_eye.style.display = "block";
+        } else {
+            x.type = "password";
+            show_eye.style.display = "block";
+            hide_eye.style.display = "none";
+        }
+    }
+
+    function getModifiedUser() {
+        return modifiedUser = {
+            "Id": $("#idInput").val(),
+            "Username": $("#usernameInput").val(),
+            "Name": $("#firstNameInput").val(),
+            "LastName": $("#lastNameInput").val(),
+            "Password": $("#passwordInput").val(),
+            "Token": "",
+            "UserTypeId": {
+                "Id": $("#usertypeSelect").val(),
+                "Usertype": $("#usertypeSelect").val() == 1 ? "User" : "Admin",
             }
         }
+    }
 
-        function registerUser() {
+    function registerUser() {
 
-            var modifiedUser = {
-                "Id":$("#idInput").val(),
-                "Username": $("#usernameInput").val(),
-                "Name": $("#firstNameInput").val(),
-                "LastName":$("#lastNameInput").val(),
-                "Password": $("#passwordInput").val(),
-                "Token":"comolomueveesamuchachota",
-                "UserTypeId": {
-                    "Id": $("#usertypeSelect").val(),
-                    "Usertype": $("#usertypeSelect").val() == 1 ? "User" : "Admin",
+        var modifiedUser = getModifiedUser();
+
+        jQuery.ajax({
+            url: "@Url.Action("InsertOrUpdateUser", "Home")",
+            type: "POST",
+            data: JSON.stringify({ user: modifiedUser }),
+            datatype: "json",
+            contentType: "application/json; charset=utf-8",
+            success: function (data) {
+                $(".modal-body").LoadingOverlay("hide");
+                console.log(data.excecuted, data.message);
+                if (data.excecuted == true) {
+                    $("#registerUserModal").modal("hide");
+                    $("#toastText").text(data.message);
+                    $("#toast").toast("show");
+
+                    modifiedUser.Token = data.token;
+                    console.log(modifiedUser);
+
+                    if (modifiedUser.Id == 0) {
+                        table.row.add(modifiedUser).draw(false);
+                    } else {
+                        table.row(row).data(modifiedUser).draw(false);
+                        row = null;
+                    }
+
+                } else {
+                    $("#alert").text(data.message);
+                    $("#alert").show();
                 }
+            },
+            error: function (error) {
+                $(".modal-body").LoadingOverlay("hide");
+                $("#registerUserModal").modal("hide");
+                $("#toastText").text("Ajax error on insertOrUpdateUser");
+                $("#toast").toast("show");
+                console.log(error);
+            },
+            beforeSend : function () {
+                $(".modal-body").LoadingOverlay("show", {
+                    imageResizeFactor: 2,
+                    text: "Loading...",
+                    size: 20,
+                    maxSize: 50,
+                    minSize: 20,
+                });
             }
+        });
 
+    }
+
+    function modalRegisterUser(json) {
+        $("#idInput").val(json == null ? 0 : json.Id);
+        $("#firstNameInput").val(json == null ? "" : json.Name);
+        $("#lastNameInput").val(json == null ? "" : json.LastName);
+        $("#usernameInput").val(json == null ? "" : json.Username);
+        $("#passwordInput").val(json == null ? "" : json.Password);
+        $("#usertypeSelect").val(json == null ? 1 : json.UserTypeId.Usertype == "Admin" ? 2 : 1)
+        $("#alert").hide();
+        $("#registerUserModal").modal("show");
+    }
+
+    $("#userDataTable tbody").on("click", '.editButton', function () {
+        row = $(this).closest("tr");
+        var userInfo = table.row(row).data();
+        console.log(userInfo);
+        modalRegisterUser(userInfo);
+    });
+
+    $("#userDataTable tbody").on("click", '.deleteButton', function () {
+        row = $(this).closest("tr");
+        var userInfo = table.row(row).data();
+        console.log(userInfo);
+
+        swal({
+            title: "Are you sure you want to delete this user?",
+            text: userInfo.Username,
+            type: "warning",
+            showCancelButton: true,
+            confirmButtonClass: "btn-success",
+            confirmButtonText: "Yes",
+            cancelButtonText: "No!",
+            closeOnConfirm: false,
+            closeOnCancel: true
+        }, function () {
+            var modifiedUser = getModifiedUser();
             jQuery.ajax({
-                url: "@Url.Action("insertOrUpdateUser", "Home")",
+                url: "@Url.Action("DeleteUser","Home")",
                 type: "POST",
                 data: JSON.stringify({ user: modifiedUser }),
                 datatype: "json",
                 contentType: "application/json; charset=utf-8",
                 success: function (data) {
-                    console.log(data.excecuted, data.message);
-                    if (data.excecuted == true) {
-                        $("#registerUserModal").modal("hide");
-                        $("#toastText").text(data.message);
-                        $("#toast").toast("show");
-
-                        console.log(modifiedUser);
-
-                        if (modifiedUser.Id == 0) {
-                            table.row.add(modifiedUser).draw(false);
-                        } else {
-                            table.row(row).data(modifiedUser).draw(false);
-                            row = null;
-                        }
-
+                    if (data.excecuted) {
+                        table.row(row).remove().draw();
+                        swal("Deleted!", data.message, "success");
                     } else {
-                        $("#alert").text(data.message);
-                        $("#alert").show();
+                        swal("Error", data.message, "error");
                     }
                 },
                 error: function (error) {
+                    swal("Error", "There was an error while removing the user.", "error");
                     console.log(error);
-                },
+                }
             });
-
-        }
-
-        function modalRegisterUser(json) {
-            $("#idInput").val(json == null ? 0 : json.Id);
-            $("#firstNameInput").val(json == null ? "" : json.Name);
-            $("#lastNameInput").val(json == null ? "" : json.LastName);
-            $("#usernameInput").val(json == null ? "" : json.Username);
-            $("#passwordInput").val(json == null ? "" : json.Password);
-            $("#usertypeSelect").val(json == null ? 1 : json.UserTypeId.Usertype == "Admin" ? 2 : 1)
-            $("#alert").hide();
-            $("#registerUserModal").modal("show");
-        }
-
-        $("#userDataTable tbody").on("click", '.editButton', function () {
-            row = $(this).closest("tr");
-            var userInfo = table.row(row).data();
-            console.log(userInfo);
-            modalRegisterUser(userInfo);
         });
 
-        </script>
-    }
+    });
+
+    </script>
+}
 

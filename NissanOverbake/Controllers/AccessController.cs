@@ -16,5 +16,14 @@ namespace NissanOverbake.Controllers
         {
             return View();
         }
+
+        [HttpPost]
+        public ActionResult ValidateLogin(User user)
+        {
+            string message = "";
+            bool excecuted = false;
+            return Json(new { excecuted = excecuted, message = message }, JsonRequestBehavior.AllowGet);
+        }
+
     }
 }

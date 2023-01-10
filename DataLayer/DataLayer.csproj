@@ -150,6 +150,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Encryption.cs" />
+    <Compile Include="LogApi.cs" />
+    <Compile Include="PlcLogsApi.cs" />
     <Compile Include="UsersApi.cs" />
     <Compile Include="Conection.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -15,6 +15,11 @@ namespace NissanOverbake
                         "~/Scripts/fontawesome/all.min.js",
                         "~/Scripts/DataTables/jquery.dataTables.js",
                         "~/Scripts/DataTables/dataTables.responsive.js",
+                        "~/Scripts/LoadingOverlay/loadingoverlay.min.js",
+                        "~/Scripts/sweetalert.min.js",
+                        "~/Scripts/chart.min.js",
+                        "~/Scripts/Charts.min.js",
+                        "~/Scripts/chart.js",
                         "~/Scripts/scripts.js"));
             
             bundles.Add(new Bundle("~/bundles/bootstrap").Include(
@@ -26,6 +31,7 @@ namespace NissanOverbake
                         "~/Content/DataTables/css/jquery.dataTables.min.css",
                         "~/Content/DataTables/css/responsive.dataTables.css",
                         "~/Content/bootstrap.css",
+                        "~/Content/sweetalert.css",
                         "~/Content/Site.css"));
         }
     }

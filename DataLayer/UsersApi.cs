@@ -71,21 +71,21 @@ namespace DataLayer
             return list;
         }
 
-        public static bool registerOrUpdateUser(User user, out string message)
+        public static bool registerOrUpdateUser(User user, out string message, out string token)
         {
-            if(!UsersApi.validateUser(user, out message)) return false;
+            if (String.IsNullOrEmpty(user.Token)) user.Token = Encryption.GenerateToken();
+            token = user.Token;
+            if (!UsersApi.validateUser(user, out message)) return false;
             try
             {
                 using (MySqlConnection connection = new MySqlConnection(Conection.cn))
                 {
-                    Debug.WriteLine("conexion");
                     connection.Open();
                     string query = "";
                     if( user.Id == 0) query = string.Format("insert into users(user, password, name, lastName, userTypeId, token) Values ('{0}', '{1}', '{2}', '{3}', {4}, '{5}');", 
                         user.Username, user.Password, user.Name, user.LastName, user.UserTypeId.Id, user.Token);
                     else query = string.Format("update users set user = '{0}', password = '{1}', name = '{2}', lastName = '{3}', userTypeId = {4}, token = '{5}' where id = {6};",
                             user.Username, user.Password, user.Name, user.LastName, user.UserTypeId.Id, user.Token, user.Id);
-                    // Debug.WriteLine(query);
                     using (MySqlCommand cmd = new MySqlCommand(query, connection))
                     {
                         cmd.CommandType = CommandType.Text;
