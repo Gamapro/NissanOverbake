@@ -14,32 +14,37 @@ namespace NissanOverbake.Controllers
 
         // ############################## VIEWS ###############################
 
+        [OutputCache(NoStore = true, Duration = 0, VaryByParam = "*")]
         public ActionResult UsersDashboard()
         {
             return View("UsersDashboard","~/Views/Shared/_Layout.cshtml",null);
         }
 
+        [OutputCache(NoStore = true, Duration = 0, VaryByParam = "*")]
         public ActionResult OverbakeLogCharts()
         {
             return View("OverbakeLogCharts", "~/Views/Shared/_Layout.cshtml", null);
         }
 
+        [OutputCache(NoStore = true, Duration = 0, VaryByParam = "*")]
         public ActionResult OverbakeLogDashboard()
         {
             return View("OverbakeLogDashboard", "~/Views/Shared/_Layout.cshtml", null);
         }
 
+        [OutputCache(NoStore = true, Duration = 0, VaryByParam = "*")]
         public ActionResult PlcConnection()
         {
             return View("PlcConnection", "~/Views/Shared/_Layout.cshtml", null);
         }
+
+        [OutputCache(NoStore = true, Duration = 0, VaryByParam = "*")]
         public ActionResult PlcLogDashboard()
         {
             return View("PlcLogDashboard", "~/Views/Shared/_Layout.cshtml", null);
         }
 
         // ######################## JSON HTTP REQUESTS ########################
-
         [HttpGet]
         public ActionResult ListUsers()
         {
@@ -70,7 +75,6 @@ namespace NissanOverbake.Controllers
             bool excecuted = UsersApi.registerOrUpdateUser(user, out message, out token);
             return Json(new { excecuted = excecuted, message = message, token = token }, JsonRequestBehavior.AllowGet);
         }
-
         [HttpPost]
         public ActionResult DeleteUser(User user)
         {

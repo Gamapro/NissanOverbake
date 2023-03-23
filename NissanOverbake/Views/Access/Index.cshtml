@@ -12,6 +12,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
     <meta name="description" content="" />
     <meta name="author" content="" />
+    @Styles.Render("~/Content/css")
     <title>Login - SB Admin</title>
     <link href="~/Content/Site.css" rel="stylesheet" />
 </head>
@@ -25,22 +26,27 @@
                             <div class="card shadow-lg border-0 rounded-lg mt-5 border-dark">
                                 <div class="card-header"><h3 class="text-center font-weight-light my-4">Login</h3></div>
                                 <div class="card-body">
-                                    <form action="@Url.Action("UsersDashboard","Home")" method="post">
-                                        <div class="form-floating mb-3">
-                                            <input class="form-control" id="inputEmail" type="email" placeholder="name@example.com" />
-                                            <label for="inputEmail">Username</label>
+
+                                    <form action="@Url.Action("Index", "Access")" method="post" id="miFormulario">
+
+                                        <div class="form-group form-floating mb-3">
+                                            <input class="form-control" id="inputUsername" name="name" type="text" placeholder="Username" />
+                                            <label for="inputUsername">Username</label>
                                         </div>
-                                        <div class="form-floating mb-3">
-                                            <input class="form-control" id="inputPassword" type="password" placeholder="Password" />
+
+                                        <div class="form-group form-floating mb-3">
+                                            <input class="form-control" id="inputPassword" name="password" type="password" placeholder="Password" />
                                             <label for="inputPassword">Password</label>
                                         </div>
+
                                         <div class="d-flex align-items-center justify-content-center mt-4 mb-0">
                                             <button type="submit" class="btn btn-primary mid-right">
                                                 Login
-                                                <i class="fas fa-user"></i>
                                             </button>
                                         </div>
+
                                     </form>
+
                                 </div>
                                 <div class="card-footer text-center py-3">
                                     <div class="small">&copy; Nissan @DateTime.Now.Year</div>
@@ -53,9 +59,108 @@
         </div>
     </div>
 
-    <script src="~/Scripts/bootstrap.bundle.js"></script>
-</body>
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/complements")
+    @Scripts.Render("~/bundles/bootstrap")
+
+    @if (System.Web.HttpContext.Current.Session["validation_message"] != null)
+    {
+        <script>
+            var message = '@System.Web.HttpContext.Current.Session["validation_message"]';
+            if(message != "") swal("Error", message, "error");
+        </script>
+    }
+
+    @if (System.Web.HttpContext.Current.Session["token"] == null)
+    {
+        <script>
+            console.log('noay');
+            let token = '@System.Web.HttpContext.Current.Session["token"]';
+            console.log(token);
+        </script>
+    }
+    else
+    {
+        <script>
+            console.log('siay');
+            let token = '@System.Web.HttpContext.Current.Session["token"]';
+            console.log(token);
+        </script>
+    }
+
+        <script type="text/javascript">
+
+        function getUser() {
+            return modifiedUser = {
+                "Id": 0,
+                "Username": document.getElementById("inputUsername").value,
+                "Name": "",
+                "LastName": "",
+                "Password": document.getElementById("inputPassword").value,
+                "Token": "",
+                "UserTypeId": {
+                    "Id": 0,
+                    "Usertype": "",
+                }
+            };
+        }
+
+        function validate() {
+            try {
+                let user = getUser();
+                setCookie("Token", "", 1);
+                jQuery.ajax({
+                    url: "@Url.Action("ValidateLogin", "Access")",
+                    type: "POST",
+                    data: JSON.stringify({ user: user }),
+                    datatype: "json",
+                    contentType: "application/json; charset=utf-8",
+                    success: function (data) {
+                        console.log(data);
+                        if (data['excecuted'] == true) {
+                            console.log(data['message']);
+                            setCookie("Token", data["token"], 1);
+                        } else {
+                            swal("Error", data['message'], "error");
+                        }
+                        return false;
+                    },
+                    error: function (error) {
+                        console.log(error);
+                    },
+                });
+                // console.log("Out Session ", "@HttpContext.Current.Session["token"]");
+                console.log("Out Cookie", getCookie("Token"));
+                return false;
+            } catch (error) {
+                console.log("JQuery Error");
+                console.log(error);
+            }
+        }
+
+        function setCookie(cname, cvalue, exdays) {
+            const d = new Date();
+            d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
+            let expires = "expires=" + d.toUTCString();
+            document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+        }
+
+        function getCookie(cname) {
+            let name = cname + "=";
+            let ca = document.cookie.split(';');
+            for (let i = 0; i < ca.length; i++) {
+                let c = ca[i];
+                while (c.charAt(0) == ' ') {
+                    c = c.substring(1);
+                }
+                if (c.indexOf(name) == 0) {
+                    return c.substring(name.length, c.length);
+                }
+            }
+            return "";
+        }
+
+        </script>
+
+    </body>
 </html>
-
-
-

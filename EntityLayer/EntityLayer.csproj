@@ -150,6 +150,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Credentials.cs" />
     <Compile Include="Log.cs" />
     <Compile Include="PlcLog.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
