@@ -21,8 +21,8 @@ namespace NissanOverbake.Controllers
             // return View("PlcLogDashboard", "~/Views/Shared/_Layout.cshtml", null);
             return View();
         }
-
         [HttpPost]
+        [OutputCache(NoStore = true, Duration = 0, VaryByParam = "*")]
         public ActionResult Index(string name, string password) //User user)
         {
             Debug.WriteLine("Name", name);

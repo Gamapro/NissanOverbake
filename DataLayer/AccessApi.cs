@@ -30,7 +30,8 @@ namespace DataLayer
             {
                 using (MySqlConnection connection = new MySqlConnection(Conection.cn))
                 {
-                    string query = "select user, password, token from users u where u.user = \"user\" and u.password = \"test\";";
+                    string query = string.Format("select user, password, token from users u where u.user = '{0}' and u.password = '{1}';", user.Username, user.Password);
+                    Debug.WriteLine(query);
                     using (MySqlCommand cmd
                         = new MySqlCommand(query, connection))
                     {

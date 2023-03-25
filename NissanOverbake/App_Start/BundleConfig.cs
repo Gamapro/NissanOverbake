@@ -20,6 +20,8 @@ namespace NissanOverbake
                         "~/Scripts/chart.min.js",
                         "~/Scripts/Charts.min.js",
                         "~/Scripts/chart.js",
+                        "~/Scripts/jquery-validate.js",
+                        "~/Scripts/jquery-ui.js",
                         "~/Scripts/scripts.js"));
             
             bundles.Add(new Bundle("~/bundles/bootstrap").Include(
@@ -32,6 +34,7 @@ namespace NissanOverbake
                         "~/Content/DataTables/css/responsive.dataTables.css",
                         "~/Content/bootstrap.css",
                         "~/Content/sweetalert.css",
+                        "~/Content/jquery-ui.css",
                         "~/Content/Site.css"));
         }
     }

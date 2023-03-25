@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -13,75 +14,55 @@ namespace NissanOverbake.Controllers
     {
 
         // ############################## VIEWS ###############################
-
+        public static string getToken()
+        {
+            try
+            {
+                if (System.Web.HttpContext.Current.Session["token"] == null) return null;
+                return System.Web.HttpContext.Current.Session["token"].ToString();
+            }catch (Exception ex) {
+                Debug.WriteLine("Error getToken", ex.Message);
+                return "";
+            }
+        }
+        private bool checkToken()
+        {
+            return getToken() != null;
+        }
+        private bool checkUserCredentials()
+        {
+            Debug.WriteLine("User token ", getToken());
+            return UsersApi.IsAdmin(getToken());
+        }
         [OutputCache(NoStore = true, Duration = 0, VaryByParam = "*")]
         public ActionResult UsersDashboard()
         {
+            if (!checkToken() || !checkUserCredentials()) return View("~/Views/Shared/AccessDenied.cshtml", "~/Views/Shared/_Layout.cshtml");
             return View("UsersDashboard","~/Views/Shared/_Layout.cshtml",null);
         }
-
         [OutputCache(NoStore = true, Duration = 0, VaryByParam = "*")]
         public ActionResult OverbakeLogCharts()
         {
+            if (!checkToken()) return View("~/Views/Shared/AccessDenied.cshtml", "~/Views/Shared/_Layout.cshtml");
             return View("OverbakeLogCharts", "~/Views/Shared/_Layout.cshtml", null);
         }
-
         [OutputCache(NoStore = true, Duration = 0, VaryByParam = "*")]
         public ActionResult OverbakeLogDashboard()
         {
+            if (!checkToken() || !checkUserCredentials()) return View("~/Views/Shared/AccessDenied.cshtml", "~/Views/Shared/_Layout.cshtml");
             return View("OverbakeLogDashboard", "~/Views/Shared/_Layout.cshtml", null);
         }
-
         [OutputCache(NoStore = true, Duration = 0, VaryByParam = "*")]
         public ActionResult PlcConnection()
         {
+            if (!checkToken()) return View("~/Views/Shared/AccessDenied.cshtml", "~/Views/Shared/_Layout.cshtml");
             return View("PlcConnection", "~/Views/Shared/_Layout.cshtml", null);
         }
-
         [OutputCache(NoStore = true, Duration = 0, VaryByParam = "*")]
         public ActionResult PlcLogDashboard()
         {
+            if (!checkToken() || !checkUserCredentials()) return View("~/Views/Shared/AccessDenied.cshtml", "~/Views/Shared/_Layout.cshtml");
             return View("PlcLogDashboard", "~/Views/Shared/_Layout.cshtml", null);
         }
-
-        // ######################## JSON HTTP REQUESTS ########################
-        [HttpGet]
-        public ActionResult ListUsers()
-        {
-            List<User> list = new List<User>();
-            list = UsersApi.listUsers();
-            return Json(new { data = list }, JsonRequestBehavior.AllowGet);
-        }
-        [HttpGet]
-        public ActionResult ListPlcLogs()
-        {
-            List<PlcLog> list = new List<PlcLog>();
-            list = PlcLogsApi.listLogs();
-            return Json(new { data = list }, JsonRequestBehavior.AllowGet);
-        }
-        [HttpGet]
-        public ActionResult ListOverbakeLogs()
-        {
-            List<Log> list = new List<Log>();
-            list = LogApi.listLogs();
-            return Json(new { data = list }, JsonRequestBehavior.AllowGet);
-        }
-
-        [HttpPost]
-        public ActionResult InsertOrUpdateUser(User user)
-        {
-            string message = "";
-            string token = "";
-            bool excecuted = UsersApi.registerOrUpdateUser(user, out message, out token);
-            return Json(new { excecuted = excecuted, message = message, token = token }, JsonRequestBehavior.AllowGet);
-        }
-        [HttpPost]
-        public ActionResult DeleteUser(User user)
-        {
-            string message = "message";
-            bool excecuted = false; //  UsersApi.registerOrUpdateUser(user, out message);
-            return Json(new { excecuted = excecuted, message = message }, JsonRequestBehavior.AllowGet);
-        }
-
     }
 }

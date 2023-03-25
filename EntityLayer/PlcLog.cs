@@ -12,5 +12,6 @@ namespace EntityLayer
         public string Time { get; set; }
         public int PlcId { get; set; }
         public string Message { get; set; }
+        public string PlcName { get; set;}
     }
 }

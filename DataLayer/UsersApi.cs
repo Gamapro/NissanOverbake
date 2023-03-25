@@ -14,6 +14,7 @@ using Google.Protobuf.WellKnownTypes;
 using Org.BouncyCastle.Utilities.Collections;
 using Google.Protobuf;
 using Renci.SshNet;
+using System.Web;
 
 namespace DataLayer
 {
@@ -70,8 +71,70 @@ namespace DataLayer
             catch (Exception e) { Debug.WriteLine(e.Message); throw e; }
             return list;
         }
-
-        public static bool registerOrUpdateUser(User user, out string message, out string token)
+        public static bool IsAdmin(string token)
+        {
+            try
+            {
+                using (MySqlConnection connection = new MySqlConnection(Conection.cn))
+                {
+                    string query = string.Format("select token, userTypeId from users u where u.token = '{0}';", token);
+                    using (MySqlCommand cmd
+                        = new MySqlCommand(query, connection))
+                    {
+                        cmd.CommandType = CommandType.Text;
+                        connection.Open();
+                        using (MySqlDataReader sqldr = cmd.ExecuteReader())
+                        {
+                            while (sqldr.Read())
+                            {
+                                if (token == Convert.ToString(sqldr["Token"]))
+                                {
+                                    int userId = Convert.ToInt32(sqldr["UserTypeId"]);
+                                    return userId == 2;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            catch (MySqlException e) { Debug.WriteLine("MySqlException IsAdmin", e.Message); throw e; }
+            catch (Exception e) { Debug.WriteLine(e.Message); throw e; }
+            return false;
+        }
+        public static bool UserExists(User user)
+        {
+            try
+            {
+                using (MySqlConnection connection = new MySqlConnection(Conection.cn))
+                {
+                    string query = "select * from users u join usertypes ut where u.UserTypeId = ut.id;";
+                    using (MySqlCommand cmd = new MySqlCommand(query, connection))
+                    {
+                        cmd.CommandType = CommandType.Text;
+                        connection.Open();
+                        using (MySqlDataReader sqldr = cmd.ExecuteReader())
+                        {
+                            while (sqldr.Read())
+                            {
+                                if( user.Id == Convert.ToInt32(sqldr["Id"]) &&
+                                    // user.Username == Convert.ToString(sqldr["User"]) &&
+                                    // user.Password == Convert.ToString(sqldr["Password"]) &&
+                                    // user.UserTypeId.Id == Convert.ToInt32(sqldr["UserTypeId"])
+                                    user.Token == Convert.ToString(sqldr["Token"])
+                                )
+                                {
+                                    return true;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            catch (MySqlException e) { Debug.WriteLine("MySqlException listUsers", e.Message); throw e; }
+            catch (Exception e) { Debug.WriteLine(e.Message); throw e; }
+            return false;
+        }
+        public static bool RegisterOrUpdateUser(User user, out string message, out string token)
         {
             if (String.IsNullOrEmpty(user.Token)) user.Token = Encryption.GenerateToken();
             token = user.Token;
@@ -98,6 +161,100 @@ namespace DataLayer
             message = "User inserted succesfully!";
             return true;
         }
-
+        public static bool DeleteUser(User user, string token, out string message)
+        {
+            message = "";
+            if (!UsersApi.UserExists(user))
+            {
+                message = "User does not exist";
+                return false;
+            }
+            if (user.Token == token)
+            {
+                message = "Cannot delete current user";
+                return false;
+            }
+            try
+            {
+                using (MySqlConnection connection = new MySqlConnection(Conection.cn))
+                {
+                    connection.Open();
+                    string query = string.Format("delete from users where id = {0} and token = '{1}';", user.Id, user.Token);
+                    using (MySqlCommand cmd = new MySqlCommand(query, connection))
+                    {
+                        cmd.CommandType = CommandType.Text;
+                        cmd.ExecuteNonQuery();
+                    }
+                }
+            }
+            catch (MySqlException e) { message = "MySqlException" + e.Message; return false; }
+            catch (Exception e) { message = "Exception" + e.Message; return false; }
+            message = "User deleted succesfully!";
+            return true;
+        }
+        public static string GetUserToken(User user)
+        {
+            try
+            {
+                using (MySqlConnection connection = new MySqlConnection(Conection.cn))
+                {
+                    string query = "select * from users u join usertypes ut where u.UserTypeId = ut.id;";
+                    using (MySqlCommand cmd = new MySqlCommand(query, connection))
+                    {
+                        cmd.CommandType = CommandType.Text;
+                        connection.Open();
+                        using (MySqlDataReader sqldr = cmd.ExecuteReader())
+                        {
+                            while (sqldr.Read())
+                            {
+                                if (user.Id == Convert.ToInt32(sqldr["Id"])
+                                    //user.Username == Convert.ToString(sqldr["User"]) &&
+                                    //user.Password == Convert.ToString(sqldr["Password"]) &&
+                                    //user.UserTypeId.Id == Convert.ToInt32(sqldr["UserTypeId"])
+                                )
+                                {
+                                    return Convert.ToString(sqldr["Token"]);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            catch (MySqlException e) { Debug.WriteLine("MySqlException listUsers", e.Message); throw e; }
+            catch (Exception e) { Debug.WriteLine(e.Message); throw e; }
+            return "";
+        }
+        public static int GetUserId(User user)
+        {
+            try
+            {
+                using (MySqlConnection connection = new MySqlConnection(Conection.cn))
+                {
+                    string query = "select * from users u join usertypes ut where u.UserTypeId = ut.id;";
+                    using (MySqlCommand cmd = new MySqlCommand(query, connection))
+                    {
+                        cmd.CommandType = CommandType.Text;
+                        connection.Open();
+                        using (MySqlDataReader sqldr = cmd.ExecuteReader())
+                        {
+                            while (sqldr.Read())
+                            {
+                                if (user.Token == Convert.ToString(sqldr["Token"])
+                                    //user.Username == Convert.ToString(sqldr["User"]) &&
+                                    //user.Password == Convert.ToString(sqldr["Password"]) &&
+                                    //user.UserTypeId.Id == Convert.ToInt32(sqldr["UserTypeId"])
+                                )
+                                {
+                                    return Convert.ToInt32(sqldr["Id"]);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            catch (MySqlException e) { Debug.WriteLine("MySqlException listUsers", e.Message); throw e; }
+            catch (Exception e) { Debug.WriteLine(e.Message); throw e; }
+            return 0;
+        }
     }
 }

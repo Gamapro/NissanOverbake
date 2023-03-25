@@ -14,36 +14,58 @@
         <div class="card-header d-flex align-items-center justify-content-between">
             <div>
                 <i class="fas fa-table me-1"></i>
-                Users Information
-            </div>
-            <div>
-                <button type="button" class="btn btn-success mid-right">
-                    Excel
-                    <i class="fas fa-file-excel"></i>
-                </button>
-                <button type="button" class="btn btn-dark mid-right" onclick="modalRegisterUser()">
-                    Add
-                    <i class="fas fa-user"></i>
-                </button>
+                Plc Logs Informacion
             </div>
         </div>
         <div class="card-body">
+
+            <form action="@Url.Action("PlcLogsExportToExcel", "Exports")" method="post" class="row align-items-end py-1" id="excelForm">
+                <div class="col-sm-2">
+                    <div class="mb-2">
+                        <label class="form-label">Fecha Inicio</label>
+                        <input class="form-control" type="text" id="txtFechaInicio" name="fechaInicio" />
+                    </div>
+                </div>
+                <div class="col-sm-2">
+                    <div class="mb-2">
+                        <label class="form-label">Fecha Fin</label>
+                        <input class="form-control" type="text" id="txtFechaFin" name="fechaFin" />
+                    </div>
+                </div>
+                <div class="col-sm-2">
+                    <div class="mb-2">
+                        <button type="button" id="btnSearch" class="btn btn-primary btn-block form-control">
+                            Filtrar <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="col-sm-2">
+                    <div class="mb-2">
+                        <button type="button" id="btnExcel" class="btn btn-success btn-block form-control">
+                            Excel  <i class="fas fa-file-excel"></i>
+                        </button>
+                    </div>
+                </div>
+            </form>
+
+            <hr/>
+    
             <table id="userDataTable" class="display cell-border compact row-border stripe hover order-column">
                 <thead>
                     <tr>
                         <th>ID</th>
-                        <th>Time</th>
-                        <th>Plc ID</th>
-                        <th>Message</th>
+                        <th>Registro de tiempo</th>
+                        <th>Plc Nombre</th>
+                        <th>Mensaje</th>
                         <th></th>
                     </tr>
                 </thead>
                 <tfoot>
                     <tr>
                         <th>ID</th>
-                        <th>Time</th>
-                        <th>Plc ID</th>
-                        <th>Message</th>
+                        <th>Registro de tiempo</th>
+                        <th>Plc Nombre</th>
+                        <th>Mensaje</th>
                         <th></th>
                     </tr>
                 </tfoot>
@@ -54,22 +76,12 @@
     </div>
 </div>
 
-
 @section scripts{
     <script>
 
+        $("#txtFechaInicio").datepicker();
+        $("#txtFechaFin").datepicker();
         var row = null;
-
-        jQuery.ajax({
-            url: "@Url.Action("ListPlcLogs", "Home")",
-            type: "GET",
-            datatype: "json",
-            contentType: "application/json; charset=utf-8",
-            success: function (data) {
-                console.log(data);
-            }
-        });
-
         var table = $("#userDataTable").DataTable({
             responsive: true,
             ordering: true,
@@ -77,7 +89,7 @@
             scrollY: true,
             lengthMenu: [5, 10, 15, 20, 50, 100],
             "ajax": {
-                url: "@Url.Action("ListPlcLogs", "Home")",
+                url: "@Url.Action("ListPlcLogs", "PlcLogs")",
                 type: "GET",
                 datatype: "json",
                 contentType: "application/json; charset=utf-8",
@@ -85,7 +97,7 @@
             "columns": [
                 { "data": "Id" },
                 { "data": "Time" },
-                { "data": "PlcId" },
+                { "data": "PlcName" },
                 { "data": "Message" },
                 {
                     "defaultContent":
@@ -94,7 +106,56 @@
                     "orderable": false,
                     "searchable": false,
                 }
-            ]
+            ],
+            language: {
+                "url": "//cdn.datatables.net/plug-ins/1.10.16/i18n/Spanish.json"
+            },
+        });
+
+        function updateTableWithRange() {
+            var url = "@Url.Action("ListPlcLogsWithDateRange", "PlcLogs")" + "?fechaInicio=" + $("#txtFechaInicio").val() + "&fechaFin=" + $("#txtFechaFin").val();
+            console.log(url);
+            table.ajax.url(url).load();
+        }
+
+        function formSumbitConfirmed() {
+            swal('Descarga confirmada!',
+                'La descarga comenzara en breve',
+                "success");
+            $("#excelForm").submit();
+        }
+
+        $("#btnSearch").on("click", function () {
+            if ($("#txtFechaInicio").val() == "" || $("#txtFechaFin").val() == "") {
+                swal(
+                    'Error',
+                    'Ingrese un rango de fechas valido',
+                    'error');
+            } else {
+                updateTableWithRange();
+            }
+        });
+
+        $("#btnExcel").on("click", function () {
+            if ($("#txtFechaInicio").val() == "" || $("#txtFechaFin").val() == "") {
+                swal({
+                    title: "Rango no seleccionado",
+                    text: "Esta a punto de descargar todos los logs de la base de datos. Desea continuar?",
+                    type: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#DD6B55",
+                    confirmButtonText: "Continuar",
+                    cancelButtonText: "Cancelar",
+                    closeOnConfirm: false
+                }, function (isConfirm) {
+                    if (isConfirm) {
+                        formSumbitConfirmed();
+                    }
+                });
+            } else {
+                updateTableWithRange();
+                formSumbitConfirmed();
+            }
         });
 
     </script>
