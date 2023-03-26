@@ -82,7 +82,7 @@ namespace DataLayer
             {
                 using (MySqlConnection connection = new MySqlConnection(Conection.cn))
                 {
-                    string query = String.Format("update plc set enabled={0}, lastConection={1} where id={2};", log.Enabled, log.LastConection, log.Id);
+                    string query = String.Format("update plcs set enabled={0}, lastConection={1} where id={2};", log.Enabled, log.LastConection, log.Id);
                     Debug.WriteLine("QUERY UpdatePlcLog ", query);
                     using (MySqlCommand cmd = new MySqlCommand(query, connection))
                     {
@@ -114,7 +114,7 @@ namespace DataLayer
             {
                 using (MySqlConnection connection = new MySqlConnection(Conection.cn))
                 {
-                    string query = String.Format("insert into plc (name, enabled, lastConection) values ('{0}', {1}, {2});", log.Name, log.Enabled, log.LastConection);
+                    string query = String.Format("insert into plcs (name, enabled, lastConection) values ('{0}', {1}, {2});", log.Name, log.Enabled, log.LastConection);
                     Debug.WriteLine("QUERY InsertPlcLog ", query);
                     using (MySqlCommand cmd = new MySqlCommand(query, connection))
                     {
@@ -146,7 +146,7 @@ namespace DataLayer
             {
                 using (MySqlConnection connection = new MySqlConnection(Conection.cn))
                 {
-                    string query = String.Format("delete from plc where id={0};", log.Id);
+                    string query = String.Format("delete from plcs where id={0};", log.Id);
                     Debug.WriteLine("QUERY DeletePlcLog ", query);
                     using (MySqlCommand cmd = new MySqlCommand(query, connection))
                     {
