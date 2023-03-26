@@ -252,6 +252,7 @@
     <Compile Include="Controllers\ExportsController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\OverbakeLogsController.cs" />
+    <Compile Include="Controllers\PlcController.cs" />
     <Compile Include="Controllers\PlcLogsController.cs" />
     <Compile Include="Controllers\UserController.cs" />
     <Compile Include="Global.asax.cs">
@@ -656,6 +657,7 @@
     <Folder Include="Views\Exports\" />
     <Folder Include="Views\OverbakeLogs\" />
     <Folder Include="Views\PlcLogs\" />
+    <Folder Include="Views\Plc\" />
     <Folder Include="Views\User\" />
   </ItemGroup>
   <ItemGroup>

@@ -25,7 +25,17 @@
 
         setInterval(updateConnection, 1000);
 
-        function conectionFooter(value){
+        function formatDate(date) {
+            return [
+                padTo2Digits(date.getDate()),
+                padTo2Digits(date.getMonth() + 1),
+                date.getFullYear(),
+            ].join('/');
+        }
+
+        function conectionFooter(value) {
+            let fechaActual = new Date();
+            let formatoFechaHora = fechaActual.toLocaleString();
             card = "";
             if (value.Enabled) card += '<div class="card-footer bg-success text-white">'
             else card += '<div class="card-footer bg-danger text-white">'
@@ -33,15 +43,20 @@
                 + '<div class="text-xs font-weight-bold text-white text-uppercase mb-1">Estado</div>'
                 + '<div class="h5 mb-0 font-weight-bold text-white">' +
                 (value.Enabled ? 'Conectado' : 'Desconectado') + '</div>' + '</div>'
-                + '<div class="col-6">'+ '<div class="text-xs font-weight-bold text-white text-uppercase mb-1">Ultima conexion</div>'
-                + '<div class="h5 mb-0 font-weight-bold text-white">' + value.LastConnection + '</div>'
-                + '</div>' + '</div>' + '</div>' + '</div>';
+                + '<div class="col-6">' + '<div class="text-xs font-weight-bold text-white text-uppercase mb-1">Ultima conexion</div>';
+
+            if (!value.Enabled) {
+                formatoFechaHora = value.LastConection;
+            }
+
+            card += '<div class="h5 mb-0 font-weight-bold text-white">' + formatoFechaHora + '</div>' + '</div>' + '</div>' + '</div>' + '</div>';
+
             return card;
         }
 
         function updateConnection() {
             $.ajax({
-                url: "@Url.Action("ListPlcs","PlcLogs")",
+                url: "@Url.Action("ListPlcs","Plc")",
                 type: 'GET',
                 success: function (data) {
                     console.log("Limpiando y conectando");

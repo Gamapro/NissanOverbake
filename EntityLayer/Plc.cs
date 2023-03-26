@@ -11,5 +11,6 @@ namespace EntityLayer
         public int Id { get; set; }
         public string Name { get; set; }
         public int Enabled { get; set; }
+        public string LastConection { get; set; }
     }
 }

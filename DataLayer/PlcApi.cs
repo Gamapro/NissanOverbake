@@ -5,39 +5,24 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using DocumentFormat.OpenXml.Office2010.ExcelAc;
 using EntityLayer;
 using MySql.Data.MySqlClient;
+using Renci.SshNet.Messages;
 
 namespace DataLayer
 {
-    public class PlcLogsApi
+    public class PlcApi
     {
-        private static string FormatToDate(string dateString)
+        //// ################################ PLCS ####################################
+        public static List<Plc> ListPlcs()
         {
-            DateTime date = Convert.ToDateTime(dateString);
-            return date.ToString("yyyy-MM-dd");
-        }
-        //// ############################## PLC LOGS ##################################
-
-        public static List<PlcLog> ListLogs(string fechaInicio = "", string fechaFin = "")
-        {
-            List<PlcLog> list = new List<PlcLog>();
+            List<Plc> list = new List<Plc>();
             try
             {
                 using (MySqlConnection connection = new MySqlConnection(Conection.cn))
                 {
-                    string query = "";
-                    if (String.IsNullOrEmpty(fechaInicio) || String.IsNullOrEmpty(fechaFin))
-                    {
-                        query = "select pl.id, pl.time, p.name, pl.message from plclogs pl join plcs p on p.id = pl.plcId;";
-                    }
-                    else
-                    {
-                        fechaInicio = FormatToDate(fechaInicio);
-                        fechaFin = FormatToDate(fechaFin);
-                        query = String.Format("select pl.id, pl.time, p.name, pl.message from plclogs pl join plcs p on p.id = pl.plcId where pl.time between'{0}' and '{1}';", fechaInicio, fechaFin);
-                    }
-                    Debug.WriteLine("QUERY ListLogs ", query);
+                    string query = "select * from plcs;";
                     using (MySqlCommand cmd = new MySqlCommand(query, connection))
                     {
                         cmd.CommandType = CommandType.Text;
@@ -46,55 +31,50 @@ namespace DataLayer
                         {
                             while (sqldr.Read())
                             {
-                                list.Add(new PlcLog()
+                                list.Add(new Plc()
                                 {
                                     Id = Convert.ToInt32(sqldr["id"]),
-                                    Time = Convert.ToString(sqldr["time"]),
-                                    Message = sqldr["message"].ToString(),
-                                    PlcName = sqldr["name"].ToString(),
+                                    Enabled = Convert.ToInt32(sqldr["enabled"]),
+                                    Name = sqldr["name"].ToString(),
+                                    LastConection = Convert.ToString(sqldr["lastConection"])
                                 });
                             }
                         }
                     }
                 }
             }
-            catch (MySqlException e) { Debug.WriteLine("MySqlException listLogs", e.Message); throw e; }
-            catch (Exception e) { Debug.WriteLine(e.Message); throw e; }
+            catch (MySqlException e) { Debug.WriteLine("MySqlException ListPlcs", e.Message); throw e; }
+            catch (Exception e) { Debug.WriteLine("Exception ListPlcs", e.Message); throw e; }
             return list;
         }
-        public static bool InsertPlcLog(PlcLog log, out string message)
+        public static string GetPlcLastConection(int id)
         {
-            bool excecuted = false;
-            message = "";
+            string date = "";
             try
             {
                 using (MySqlConnection connection = new MySqlConnection(Conection.cn))
                 {
-                    string query = String.Format("insert into plclogs (time, plcId, message) values ('{0}', {1}, '{2}');", log.Time, log.PlcId, log.Message);
-                    Debug.WriteLine("QUERY InsertPlcLog ", query);
+                    string query = String.Format("select * from plcs where id={0};", id);
+                    Debug.WriteLine("QUERY GetLastPlcConection ", query);
                     using (MySqlCommand cmd = new MySqlCommand(query, connection))
                     {
                         cmd.CommandType = CommandType.Text;
                         connection.Open();
-                        int rows = cmd.ExecuteNonQuery();
-                        if (rows > 0)
+                        using (MySqlDataReader sqldr = cmd.ExecuteReader())
                         {
-                            excecuted = true;
-                            message = "Log insertado";
-                        }
-                        else
-                        {
-                            excecuted = false;
-                            message = "No se pudo insertar el log";
+                            while (sqldr.Read())
+                            {
+                                date = Convert.ToString(sqldr["lastConection"]);
+                            }
                         }
                     }
                 }
             }
-            catch (MySqlException e) { Debug.WriteLine("MySqlException InsertPlcLog", e.Message); throw e; }
-            catch (Exception e) { Debug.WriteLine(e.Message); throw e; }
-            return excecuted;
+            catch (MySqlException e) { Debug.WriteLine("MySqlException UpdatePlcLog", e.Message); throw e; }
+            catch (Exception e) { Debug.WriteLine("Exception UpdatePlcLog", e.Message); throw e; }
+            return date;
         }
-        public static bool UpdatePlcLog(PlcLog log, out string message)
+            public static bool UpdatePlc(Plc log, out string message)
         {
             bool excecuted = false;
             message = "";
@@ -102,7 +82,7 @@ namespace DataLayer
             {
                 using (MySqlConnection connection = new MySqlConnection(Conection.cn))
                 {
-                    string query = String.Format("update plclogs set time='{0}', plcId={1}, message='{2}' where id={3};", log.Time, log.PlcId, log.Message, log.Id);
+                    string query = String.Format("update plc set name='{0}', enabled={1}, lastConection={2} where id={3};", log.Name, log.Enabled,log.LastConection, log.Id);
                     Debug.WriteLine("QUERY UpdatePlcLog ", query);
                     using (MySqlCommand cmd = new MySqlCommand(query, connection))
                     {
@@ -126,7 +106,7 @@ namespace DataLayer
             catch (Exception e) { Debug.WriteLine(e.Message); throw e; }
             return excecuted;
         }
-        public static bool DeletePlcLog(PlcLog log, out string message)
+        public static bool InsertPlc(Plc log, out string message)
         {
             bool excecuted = false;
             message = "";
@@ -134,7 +114,39 @@ namespace DataLayer
             {
                 using (MySqlConnection connection = new MySqlConnection(Conection.cn))
                 {
-                    string query = String.Format("delete from plclogs where id={0};", log.Id);
+                    string query = String.Format("insert into plc (name, enabled, lastConection) values ('{0}', {1}, {2});", log.Name, log.Enabled, log.LastConection);
+                    Debug.WriteLine("QUERY InsertPlcLog ", query);
+                    using (MySqlCommand cmd = new MySqlCommand(query, connection))
+                    {
+                        cmd.CommandType = CommandType.Text;
+                        connection.Open();
+                        int rows = cmd.ExecuteNonQuery();
+                        if (rows > 0)
+                        {
+                            excecuted = true;
+                            message = "Log insertado";
+                        }
+                        else
+                        {
+                            excecuted = false;
+                            message = "No se pudo insertar el log";
+                        }
+                    }
+                }
+            }
+            catch (MySqlException e) { Debug.WriteLine("MySqlException InsertPlcLog", e.Message); throw e; }
+            catch (Exception e) { Debug.WriteLine(e.Message); throw e; }
+            return excecuted;
+        }
+        public static bool DeletePlc(Plc log, out string message)
+        {
+            bool excecuted = false;
+            message = "";
+            try
+            {
+                using (MySqlConnection connection = new MySqlConnection(Conection.cn))
+                {
+                    string query = String.Format("delete from plc where id={0};", log.Id);
                     Debug.WriteLine("QUERY DeletePlcLog ", query);
                     using (MySqlCommand cmd = new MySqlCommand(query, connection))
                     {
@@ -158,6 +170,5 @@ namespace DataLayer
             catch (Exception e) { Debug.WriteLine(e.Message); throw e; }
             return excecuted;
         }
-        
     }
 }

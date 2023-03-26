@@ -196,6 +196,7 @@
     <Compile Include="Encryption.cs" />
     <Compile Include="ExportApi.cs" />
     <Compile Include="LogApi.cs" />
+    <Compile Include="PlcApi.cs" />
     <Compile Include="PlcLogsApi.cs" />
     <Compile Include="System\Web\HttpContext.cs" />
     <Compile Include="UsersApi.cs" />
