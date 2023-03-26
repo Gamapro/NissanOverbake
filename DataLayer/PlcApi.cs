@@ -82,7 +82,7 @@ namespace DataLayer
             {
                 using (MySqlConnection connection = new MySqlConnection(Conection.cn))
                 {
-                    string query = String.Format("update plc set name='{0}', enabled={1}, lastConection={2} where id={3};", log.Name, log.Enabled,log.LastConection, log.Id);
+                    string query = String.Format("update plc set enabled={0}, lastConection={1} where id={2};", log.Enabled, log.LastConection, log.Id);
                     Debug.WriteLine("QUERY UpdatePlcLog ", query);
                     using (MySqlCommand cmd = new MySqlCommand(query, connection))
                     {

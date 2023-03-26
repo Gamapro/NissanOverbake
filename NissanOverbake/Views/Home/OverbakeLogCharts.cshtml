@@ -5,7 +5,6 @@
     <script src="@Url.Content("~/Scripts/Charts.min.js")"></script>
 }
 
-
 <div class="container-fluid px-4">
     <h1 class="mt-4">Overbake Charts</h1>
     <ol class="breadcrumb mb-4">
@@ -57,14 +56,43 @@
     </div>
 </div>
 
+@Scripts.Render("~/bundles/jquery")
+
 <script>
-    // Set new default font family and font color to mimic Bootstrap's default styling
+
     Chart.defaults.global.defaultFontFamily = '-apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif';
     Chart.defaults.global.defaultFontColor = '#292b2c';
 
-    // Area Chart Example
+    function formatDate(date){
+        var dd = String(date.getDate()).padStart(2, '0');
+        var mm = String(date.getMonth() + 1).padStart(2, '0'); //January is 0!
+        var yyyy = date.getFullYear();
+        return yyyy + '-' + mm + '-' + dd;
+    }
+    
+    var currentDate = new Date();
+    var tomorrow = new Date();
+    tomorrow.setDate(currentDate.getDate() + 1);
+    var yesterday = new Date();
+    yesterday.setDate(currentDate.getDate() - 1);
+    var lastWeek = new Date();
+    lastWeek.setDate(currentDate.getDate() - 7);
+    var lastMonth = new Date();
+    lastMonth.setDate(currentDate.getDate() - 30);
+    var lastYear = new Date();
+    lastYear.setDate(currentDate.getDate() - 365);
+
+    // format
+    var currentDate = formatDate(currentDate);
+    var tomorrow = formatDate(tomorrow);
+    var yesterday = formatDate(yesterday);
+    var lastWeek = formatDate(lastWeek);
+    var lastMonth = formatDate(lastMonth);
+    var lastYear = formatDate(lastYear);
+    
     var ctx = document.getElementById("myAreaChart");
-    console.log(ctx);
+
+    /*
     var myLineChart = new Chart(ctx, {
         type: 'line',
         data: {
@@ -112,7 +140,7 @@
                 display: false
             }
         }
-    });
+    });*/
 
     var ctx = document.getElementById("myBarChart");
     var myLineChart = new Chart(ctx, {
@@ -157,18 +185,44 @@
     });
 
     // Pie Chart Example
-    var ctx = document.getElementById("myPieChart");
-    var myPieChart = new Chart(ctx, {
-        type: 'pie',
-        data: {
-            labels: ["PLC_1", "PLC_4", "PLC_3", "PLC_4"],
-            datasets: [{
-                data: [12.21, 15.58, 11.25, 8.32],
-                backgroundColor: ['#007bff', '#dc3545', '#ffc107', '#28a745'],
-            }],
+    backgroundColors = ['#007bff', '#dc3545', '#ffc107', '#28a745', '#6610f2', '#e83e8c', '#fd7e14', '#20c997', '#17a2b8', '#6f42c1', '#343a40', '#6c757d', '#007bff', '#dc3545', '#ffc107', '#28a745',]
+    
+    jQuery.ajax({
+        url: "@Url.Action("ListOverbakeLogsWithDateRange", "OverbakeLogs")",
+        type: "GET",
+        data: { fechaInicio: currentDate, fechaFin: tomorrow },
+        datatype: "json",
+        contentType: "application/json; charset=utf-8",
+        success: function (data) {
+            console.log(data);
+            var plcIds = {}, color = 0, labels = [], dataset = [], backgroundColor = [];
+            for (var i = 0; i < data['data'].length; i++) {
+                var plcId = data['data'][i].PlcName;
+                if (plcIds[plcId] == undefined) {
+                    plcIds[plcId] = {
+                        label: data['data'][i].PlcName,
+                        data: 1,
+                        backgroundColor: backgroundColors[color++]
+                    };
+                } else {
+                    plcIds[plcId].data++;
+                }
+            }
+            for (var key in plcIds) {
+                labels.push(plcIds[key].label);
+                dataset.push(plcIds[key].data);
+                backgroundColor.push(plcIds[key].backgroundColor);
+            }
+            var ctx = document.getElementById("myPieChart");
+            var myPieChart = new Chart(ctx, {
+                type: 'pie',
+                data: { labels: labels, datasets: [{ data: dataset, backgroundColor: backgroundColor }], },
+            });
         },
-    });
-
-
+        error: function (error) {
+            console.log(error);
+        }
+    })
+    
 </script>
 
