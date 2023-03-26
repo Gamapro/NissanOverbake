@@ -2,6 +2,9 @@ drop database if exists overBake;
 create database overBake;
 use overBake;
 
+CREATE USER 'web_service'@'localhost' IDENTIFIED BY 'nissan_overbake';
+GRANT ALL PRIVILEGES ON * . * TO 'web_service'@'localhost';
+
 drop table if exists users;
 drop table if exists userTypes;
 drop table if exists plcLogs;
