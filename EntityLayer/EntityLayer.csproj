@@ -173,6 +173,8 @@
   <ItemGroup>
     <Compile Include="Credentials.cs" />
     <Compile Include="Log.cs" />
+    <Compile Include="OverbakeLog.cs" />
+    <Compile Include="Plc.cs" />
     <Compile Include="PlcLog.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="User.cs" />

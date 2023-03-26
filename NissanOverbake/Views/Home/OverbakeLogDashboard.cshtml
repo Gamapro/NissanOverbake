@@ -1,4 +1,4 @@
-﻿
+﻿    
 @{
     ViewBag.Title = "OverbakeLogDashboard";
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -14,40 +14,62 @@
         <div class="card-header d-flex align-items-center justify-content-between">
             <div>
                 <i class="fas fa-table me-1"></i>
-                Users Information
-            </div>
-            <div>
-                <button type="button" class="btn btn-success mid-right">
-                    Excel
-                    <i class="fas fa-file-excel"></i>
-                </button>
-                <button type="button" class="btn btn-dark mid-right" onclick="modalRegisterUser()">
-                    Add
-                    <i class="fas fa-user"></i>
-                </button>
+                Overbake logs
             </div>
         </div>
         <div class="card-body">
+
+            <form action="@Url.Action("OverbakeLogsExportToExcel", "Exports")" method="post" class="row align-items-end py-1" id="excelForm">
+                <div class="col-sm-2">
+                    <div class="mb-2">
+                        <label class="form-label">Fecha Inicio</label>
+                        <input class="form-control" type="text" id="txtFechaInicio" name="fechaInicio" />
+                    </div>
+                </div>
+                <div class="col-sm-2">
+                    <div class="mb-2">
+                        <label class="form-label">Fecha Fin</label>
+                        <input class="form-control" type="text" id="txtFechaFin" name="fechaFin" />
+                    </div>
+                </div>
+                <div class="col-sm-2">
+                    <div class="mb-2">
+                        <button type="button" id="btnSearch" class="btn btn-primary btn-block form-control">
+                            Filtrar <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="col-sm-2">
+                    <div class="mb-2">
+                        <button type="button" id="btnExcel" class="btn btn-success btn-block form-control">
+                            Excel  <i class="fas fa-file-excel"></i>
+                        </button>
+                    </div>
+                </div>
+            </form>
+
+            <hr />
+
             <table id="userDataTable" class="display cell-border compact row-border stripe hover order-column">
                 <thead>
                     <tr>
                         <th>ID</th>
-                        <th>Time</th>
-                        <th>Status</th>
+                        <th>Registro de tiempo</th>
+                        <th>Estado</th>
                         <th>Serial Number</th>
-                        <th>Plc ID</th>
-                        <th>Message</th>
+                        <th>Plc Nombre</th>
+                        <th>Mensaje</th>
                         <th></th>
                     </tr>
                 </thead>
                 <tfoot>
                     <tr>
                         <th>ID</th>
-                        <th>Time</th>
-                        <th>Status</th>
+                        <th>Registro de tiempo</th>
+                        <th>Estado</th>
                         <th>Serial Number</th>
-                        <th>Plc ID</th>
-                        <th>Message</th>
+                        <th>Plc Nombre</th>
+                        <th>Mensaje</th>
                         <th></th>
                     </tr>
                 </tfoot>
@@ -62,46 +84,137 @@
 @section scripts{
     <script>
 
-    var row = null;
+        $("#txtFechaInicio").datepicker();
+        $("#txtFechaFin").datepicker();
+        var row = null;
 
-    jQuery.ajax({
-        url: "@Url.Action("ListOverbakeLogs", "Home")",
-        type: "GET",
-        datatype: "json",
-        contentType: "application/json; charset=utf-8",
-        success: function (data) {
-            console.log(data);
+        var table = $("#userDataTable").DataTable({
+            responsive: true,
+            ordering: true,
+            fixedColumns: true,
+            scrollY: true,
+            "lengthMenu": [[10, 15, 20, 50, 100, -1], [10, 15, 20, 50, 100, "All"]],
+            "ajax": {
+                url: "@Url.Action("ListOverbakeLogs", "OverbakeLogs")",
+                type: "GET",
+                datatype: "json",
+                contentType: "application/json; charset=utf-8",
+            },
+            "columns": [
+                { "data": "Id" },
+                { "data": "Time" },
+                { "data": "Status" },
+                { "data": "SerialNumber" },
+                { "data": "PlcName" },
+                { "data": "Message" },
+                {
+                    "defaultContent":
+                        '<button type="button" class="editButton btn btn-info btn-sm p-2 mx-1"><i class="fas fa-pen"></i></button>' +
+                        '<button type="button" class="deleteButton btn btn-danger btn-sm p-2 mx-1"><i class="fas fa-trash"></i></button>',
+                    "orderable": false,
+                    "searchable": false,
+                }
+            ],
+            language: {
+                "url": "//cdn.datatables.net/plug-ins/1.10.16/i18n/Spanish.json"
+            },
+            'columnDefs': [
+                {
+                    "targets": [0, 1, 2, 3, 4, 5, 6],
+                    "className": "text-center",
+                },
+            ],
+        });
+
+
+        function updateTableWithRange() {
+            var url = "@Url.Action("ListOverbakeLogsWithDateRange", "OverbakeLogs")" + "?fechaInicio=" + $("#txtFechaInicio").val() + "&fechaFin=" + $("#txtFechaFin").val();
+            console.log(url);
+            table.ajax.url(url).load();
         }
-    });
 
-    var table = $("#userDataTable").DataTable({
-        responsive: true,
-        ordering: true,
-        fixedColumns: true,
-        scrollY: true,
-        lengthMenu: [5, 10, 15, 20, 50, 100],
-        "ajax": {
-            url: "@Url.Action("ListOverbakeLogs", "Home")",
-            type: "GET",
-            datatype: "json",
-            contentType: "application/json; charset=utf-8",
-        },
-        "columns": [
-            { "data": "Id" },
-            { "data": "Time" },
-            { "data": "Status" },
-            { "data": "SerialNumber" },
-            { "data": "PlcId" },
-            { "data": "Message" },
-            {
-                "defaultContent":
-                    '<button type="button" class="editButton btn btn-info btn-sm p-2 mx-1"><i class="fas fa-pen"></i></button>' +
-                    '<button type="button" class="deleteButton btn btn-danger btn-sm p-2 mx-1"><i class="fas fa-trash"></i></button>',
-                "orderable": false,
-                "searchable": false,
+        function formSumbitConfirmed() {
+            swal('Descarga confirmada!',
+                'La descarga comenzara en breve',
+                "success");
+            $("#excelForm").submit();
+        }
+
+        $("#btnSearch").on("click", function () {
+            if ($("#txtFechaInicio").val() == "" || $("#txtFechaFin").val() == "") {
+                swal(
+                    'Error',
+                    'Ingrese un rango de fechas valido',
+                    'error');
+            } else {
+                updateTableWithRange();
             }
-        ]
-    });
+        });
+
+        $("#btnExcel").on("click", function () {
+            if ($("#txtFechaInicio").val() == "" || $("#txtFechaFin").val() == "") {
+                swal({
+                    title: "Rango no seleccionado",
+                    text: "Esta a punto de descargar todos los logs de la base de datos. Desea continuar?",
+                    type: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#DD6B55",
+                    confirmButtonText: "Continuar",
+                    cancelButtonText: "Cancelar",
+                    closeOnConfirm: false
+                }, function (isConfirm) {
+                    if (isConfirm) {
+                        formSumbitConfirmed();
+                    }
+                });
+            } else {
+                updateTableWithRange();
+                formSumbitConfirmed();
+            }
+        });
+
+
+        $("#userDataTable tbody").on("click", '.deleteButton', function () {
+
+            row = $(this).closest("tr");
+            var logInfo = table.row(row).data();
+
+            console.log(logInfo);
+
+            swal({
+                title: "Estas seguro que quieres eliminar este registro?",
+                text: "ID: " + logInfo.Id,
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonClass: "btn-success",
+                confirmButtonText: "Si",
+                cancelButtonText: "No",
+                closeOnConfirm: false,
+                closeOnCancel: true
+            }, function () {
+
+                jQuery.ajax({
+                    url: "@Url.Action("DeleteOverbakeLog", "OverbakeLogs")",
+                    type: "POST",
+                    data: JSON.stringify({ log: logInfo }),
+                    datatype: "json",
+                    contentType: "application/json; charset=utf-8",
+                    success: function (data) {
+                        if (data.excecuted) {
+                            table.row(row).remove().draw();
+                            swal("Deleted!", data.message, "success");
+                        } else {
+                            swal("Error", data.message, "error");
+                        }
+                    },
+                    error: function (error) {
+                        swal("Error", "Hubo un error al remover el registro", "error");
+                        console.log(error);
+                    }
+                })
+
+            });
+        });
 
     </script>
 

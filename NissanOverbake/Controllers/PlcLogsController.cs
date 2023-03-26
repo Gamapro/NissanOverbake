@@ -16,12 +16,26 @@ namespace NissanOverbake.Controllers
         {
             return View();
         }
+
+
+        //// ################################ PLCS ####################################
+
+        [HttpGet]
+        public ActionResult ListPlcs()
+        {
+            List<Plc> list = new List<Plc>();
+            list = PlcLogsApi.ListPlcs();
+            return Json(new { data = list }, JsonRequestBehavior.AllowGet);
+        }
+
+        //// ############################## PLC LOGS ##################################
+
         [HttpGet]
         public ActionResult ListPlcLogs()
         {
             List<PlcLog> list = new List<PlcLog>();
             list = PlcLogsApi.ListLogs();
-            return Json(new { data = list}, JsonRequestBehavior.AllowGet);
+            return Json(new { data = list }, JsonRequestBehavior.AllowGet);
         }
         [HttpGet]
         public ActionResult ListPlcLogsWithDateRange(string fechaInicio, string fechaFin)
@@ -48,6 +62,55 @@ namespace NissanOverbake.Controllers
                 }
             }
             return Json(new { data = list, message = message, excecuted = excecuted }, JsonRequestBehavior.AllowGet);
+        }
+        [HttpPost]
+        public ActionResult InsertPlcLog(PlcLog log)
+        {
+            int excecuted = 0;
+            string message = "";
+            try
+            {
+                PlcLogsApi.InsertPlcLog(log, out message);
+                excecuted = 1;
+            }
+            catch (Exception e)
+            {
+                message = e.Message;
+            }
+            return Json(new { message = message, excecuted = excecuted }, JsonRequestBehavior.AllowGet);
+        }
+        [HttpPost]
+        public ActionResult DeletePlcLog(PlcLog log)
+        {
+            int excecuted = 0;
+            string message = "";
+            try
+            {
+                PlcLogsApi.DeletePlcLog(log, out message);
+                excecuted = 1;
+            }
+            catch (Exception e)
+            {
+                message = e.Message;
+            }
+            return Json(new { message = message, excecuted = excecuted }, JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpPost]
+        public ActionResult UpdatePlcLog(PlcLog log)
+        {
+            int excecuted = 0;
+            string message = "";
+            try
+            {
+                PlcLogsApi.UpdatePlcLog(log, out message);
+                excecuted = 1;
+            }
+            catch (Exception e)
+            {
+                message = e.Message;
+            }
+            return Json(new { message = message, excecuted = excecuted }, JsonRequestBehavior.AllowGet);
         }
     }
 }

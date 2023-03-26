@@ -75,5 +75,29 @@ namespace NissanOverbake.Controllers
             Debug.WriteLine("Descargando excel plcLogs");
             return CreateExcel(dt, "Plc Logs", "PlcLogs");
         }
-    }
+        [HttpPost]
+        public FileResult OverbakeLogsExportToExcel(string fechaInicio, string fechaFin)
+        {
+            Debug.WriteLine("Fecha inicio OverbakeLogsExportToExcel: ", fechaInicio);
+            Debug.WriteLine("Fecha Fin OverbakeLogsExportToExcel: ", fechaFin);
+            List<OverbakeLog> list = new List<OverbakeLog>();
+            list = LogApi.ListLogs(fechaInicio, fechaFin);
+            DataTable dt = new DataTable();
+            dt.Columns.AddRange(new DataColumn[6] {
+                new DataColumn("Id"),
+                new DataColumn("Time"),
+                new DataColumn("Plc Name"),
+                new DataColumn("Serial Number"),
+                new DataColumn("Status"),
+                new DataColumn("Message")
+            });
+            foreach (OverbakeLog log in list)
+            {
+                dt.Rows.Add(new object[] { log.Id, log.Time, log.PlcName,
+                                           log.SerialNumber, log.Status, log.Message });
+            }
+            Debug.WriteLine("Descargando excel OverbakeLogs");
+            return CreateExcel(dt, "Overbake Logs", "OverbakeLogs");
+        }
+        }
 }

@@ -74,9 +74,7 @@
     @if (System.Web.HttpContext.Current.Session["token"] == null)
     {
         <script>
-            console.log('noay');
-            let token = '@System.Web.HttpContext.Current.Session["token"]';
-            console.log(token);
+            console.log('noay token');
         </script>
     }
     else

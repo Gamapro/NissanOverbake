@@ -13,7 +13,7 @@
         <div class="card-header d-flex align-items-center justify-content-between">
             <div>
                 <i class="fas fa-table me-1"></i>
-                Users Information
+                Informacion de usuarios
             </div>
             <div>
                 <form action="@Url.Action("UsersExportToExcel", "Exports")" method="post" class="d-inline-block" id="excelForm">
@@ -73,14 +73,14 @@
                 <input id="idInput" type="hidden" value="0" />
                 <div class="row mb-3">
                     <div class="col-sm-6">
-                        <label for="firstNameModalLabel" class="form-label">First name</label>
+                        <label for="firstNameModalLabel" class="form-label">Nombres(s)</label>
                         <div class="input-group">
                             <span class="input-group-text"><i class="fas fa-id-badge"></i></span>
                             <input type="text" class="form-control" id="firstNameInput" placeholder="Ejemplo: Checo">
                         </div>
                     </div>
                     <div class="col-sm-6">
-                        <label for="lastNameModalLabel" class="form-label">Last name</label>
+                        <label for="lastNameModalLabel" class="form-label">Apellido(s)</label>
                         <div class="input-group">
                             <span class="input-group-text"><i class="fas fa-id-badge"></i></span>
                             <input type="text" class="form-control" id="lastNameInput" placeholder="Ejemplo: Perez">
@@ -88,7 +88,7 @@
                     </div>
                 </div>
                 <div class="mb-3">
-                    <label for="usernameModalLabel" class="form-label">Username</label>
+                    <label for="usernameModalLabel" class="form-label">Usuario</label>
                     <div class="input-group">
                         <span class="input-group-text"><i class="fas fa-user-circle"></i></span>
                         <input type="text" class="form-control" id="usernameInput" placeholder="Ejemplo: User">
@@ -106,10 +106,10 @@
                     </div>
                 </div>
                 <div class="mb-3">
-                    <label for="userTypeModalLabel" class="form-label">User type</label>
+                    <label for="userTypeModalLabel" class="form-label">Nivel de usuario</label>
                     <select class="form-select" id="usertypeSelect">
-                        <option selected value="1">User</option>
-                        <option value="2">Admin</option>
+                        <option selected value="1">Usuario</option>
+                        <option value="2">Administrador</option>
                     </select>
                 </div>
                 <div class="mb-3">
@@ -144,7 +144,7 @@
         ordering: true,
         fixedColumns: true,
         scrollY: true,
-        lengthMenu: [5, 10, 15, 20, 50, 100],
+        "lengthMenu": [[5, 10, 15, 20, 50, 100, -1], [5, 10, 15, 20, 50, 100, "All"]],
         "ajax": {
             url: "@Url.Action("ListUsers","User")",
             type: "GET",
@@ -176,6 +176,12 @@
         language: {
             "url": "//cdn.datatables.net/plug-ins/1.10.16/i18n/Spanish.json"
         },
+        'columnDefs': [
+            {
+                "targets": [0,1,6,7],
+                "className": "text-center",
+            },
+        ],
     });
 
     function password_show_hide() {
@@ -285,7 +291,6 @@
     $("#userDataTable tbody").on("click", '.deleteButton', function () {
         row = $(this).closest("tr");
         var userInfo = table.row(row).data();
-        // console.log(userInfo);
         swal({
             title: "Are you sure you want to delete this user?",
             text: userInfo.Username,

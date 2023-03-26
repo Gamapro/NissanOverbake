@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@ViewBag.Title</title>
     @Styles.Render("~/Content/css")
+    <link rel="stylesheet" href="~/Content/w3-helper.css" />
+    <link rel="stylesheet" href="~/Content/ErrorPage.css" />
 </head>
 <body class="sb-nav-fixed">
     <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
@@ -20,7 +22,10 @@
             <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="fas fa-user fa-fw"></i></a>
                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                    <li><a class="dropdown-item" href="#!">Settings</a></li>
+                    <li><a class="dropdown-item" href="#!">
+                        <div>Usuario activo:</div>
+                        @System.Web.HttpContext.Current.Session["username"]
+                    </a></li>
                     <li><hr class="dropdown-divider" /></li>
                     <li><a class="dropdown-item" href="@Url.Action("ClearSessionToken","Access")">Logout</a></li>
                 </ul>
@@ -43,23 +48,22 @@
                         </a>
                         <div class="sb-sidenav-menu-heading">PLC control</div>
                         <a class="nav-link" href="@Url.Action("PlcConnection","Home")">
-                            <div class="sb-nav-link-icon"><i class="fas fa-chart-area"></i></div>
-                            Conection
+                            <div class="sb-nav-link-icon"><i class="fas fa-crate-empty"></i></div>
+                            Conexion
                         </a>
                         <a class="nav-link" href="@Url.Action("PlcLogDashboard","Home")">
                             <div class="sb-nav-link-icon"><i class="fas fa-table"></i></div>
                             Dashboard
                         </a>
-                        <div class="sb-sidenav-menu-heading">Management</div>
+                        <div class="sb-sidenav-menu-heading">Administrador</div>
                         <a class="nav-link" href="@Url.Action("UsersDashboard","Home")">
                             <div class="sb-nav-link-icon"><i class="fas fa-users fa-users-cog"></i></div>
-                            Users
+                            Usuarios
                         </a>
                     </div>
                 </div>
                 <div class="sb-sidenav-footer">
-                    <div class="small">Logged in as:</div>
-                    @System.Web.HttpContext.Current.Session["username"]
+                    <div class="small">Usuario activo: @System.Web.HttpContext.Current.Session["username"]</div>
                 </div>
             </nav>
         </div>

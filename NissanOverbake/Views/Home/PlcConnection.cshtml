@@ -11,50 +11,80 @@
         <li class="breadcrumb-item">PLC CONTROL</li>
         <li class="breadcrumb-item active">Connection</li>
     </ol>
-    <div class="card mb-4 container-fluid p-lg-5">
-
-        <div class="row row-cols-1 row-cols-md-2 g-4">
-            <div class="col">
-                <div class="card">
-                    <div class="card-header  bg-danger">
-                        <h5 class="card-title">PLC 1</h5>
-                    </div>
-                    <div class="card-body">
-                        <h5 class="card-title">DISCONNECTED</h5>
-                    </div>
-                </div>
-            </div>
-            <div class="col">
-                <div class="card">
-                    <div class="card-header  bg-success">
-                        <h5 class="card-title">PLC 1</h5>
-                    </div>
-                    <div class="card-body">
-                        <h5 class="card-title">CONNECTED</h5>
-                    </div>
-                </div>
-            </div>
-            <div class="col">
-                <div class="card">
-                    <div class="card-header  bg-success">
-                        <h5 class="card-title">PLC 1</h5>
-                    </div>
-                    <div class="card-body">
-                        <h5 class="card-title">CONNECTED</h5>
-                    </div>
-                </div>
-            </div>
-            <div class="col">
-                <div class="card">
-                    <div class="card-header  bg-success">
-                        <h5 class="card-title">PLC 1</h5>
-                    </div>
-                    <div class="card-body">
-                        <h5 class="card-title">CONNECTED</h5>
-                    </div>
-                </div>
-            </div>
-        </div>
+    <div class="card my-2 container-fluid p-lg-5" id="cardSpace">
 
     </div>
 </div>
+
+@section scripts{
+    <script>
+
+        $(document).ready(
+            updateConnection()
+        );
+
+        setInterval(updateConnection, 1000);
+
+        function conectionFooter(value){
+            card = "";
+            if (value.Enabled) card += '<div class="card-footer bg-success text-white">'
+            else card += '<div class="card-footer bg-danger text-white">'
+            card += '<div class="row">' + '<div class="col-6">'
+                + '<div class="text-xs font-weight-bold text-white text-uppercase mb-1">Estado</div>'
+                + '<div class="h5 mb-0 font-weight-bold text-white">' +
+                (value.Enabled ? 'Conectado' : 'Desconectado') + '</div>' + '</div>'
+                + '<div class="col-6">'+ '<div class="text-xs font-weight-bold text-white text-uppercase mb-1">Ultima conexion</div>'
+                + '<div class="h5 mb-0 font-weight-bold text-white">' + value.LastConnection + '</div>'
+                + '</div>' + '</div>' + '</div>' + '</div>';
+            return card;
+        }
+
+        function updateConnection() {
+            $.ajax({
+                url: "@Url.Action("ListPlcs","PlcLogs")",
+                type: 'GET',
+                success: function (data) {
+                    console.log("Limpiando y conectando");
+                    $('#cardSpace').empty();
+                    console.log(data);
+                    var rowIdx = 0,  colIdx = 0;
+                    var limit = 2;
+                    $.each(data['data'], function (index, value) {
+                        var card = '';
+
+                        if(colIdx == 0) {
+                            rowIdx++;
+                            rowHtml = '<div class="row d-flex" id=row-'+rowIdx+'></div>';
+                            $('#cardSpace').append(rowHtml);
+                        }
+
+                        card += '<div class="col-xl-4 flex-fill mb-4">'
+                            + '<div class="card border-left-primary shadow h-100 py-2">'
+
+                            + '<div class="card-body">'
+                            + '<div class="row no-gutters align-items-center">'
+                            + '<div class="col mr-2">'
+                            + '<div class="h5 mb-0 font-weight-bold text-primary text-uppercase">PLC Nombre</div>'
+                            + '<div class="h5 mb-0 font-weight-bold">' + value.Name + '</div>'
+                            + '</div>'
+                            + '<div class="col-auto">'
+                            + '<i class="fas fa-server fa-2x text-gray-300"></i>'
+                            + '</div>'
+                            + '</div>'
+                            + '</div>'
+
+                            + conectionFooter(value)
+                            + '</div>'
+                            + '</div>';
+
+                        colIdx = (colIdx + 1) % limit;
+                        $('#row-'+rowIdx).append(card);
+                    });
+                }
+            });
+        }
+
+    </script>
+}
+
+

@@ -14,8 +14,21 @@
     </ol>
     <div class="card mb-4">
         <div class="card-header">
-            <i class="fas fa-chart-area me-1"></i>
-            Overbaked pieces by day
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <i class="fas fa-chart-area me-1"></i> Overbaked pieces by
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Select filter</a>
+                    <ul class="dropdown-menu dropdown-menu-lg-start" aria-labelledby="navbarDropdown">
+                        <li><a class="dropdown-item" href="#">Week</a></li>
+                        <li><hr class="dropdown-divider" /></li>
+                        <li><a class="dropdown-item" href="#">Month</a></li>
+                        <li><hr class="dropdown-divider" /></li>
+                        <li><a class="dropdown-item" href="#">Year</a></li>
+                    </ul>
+                </li>
+            </ul>
         </div>
         <div class="card-body"><canvas id="myAreaChart" width="100" height="30"></canvas></div>
         <div class="card-footer small text-muted">Updated yesterday at 11:59 PM</div>
