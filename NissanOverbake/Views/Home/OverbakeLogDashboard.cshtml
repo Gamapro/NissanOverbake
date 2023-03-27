@@ -88,6 +88,8 @@
         $("#txtFechaFin").datepicker();
         var row = null;
 
+        var dates = getDates();
+
         var table = $("#userDataTable").DataTable({
             responsive: true,
             ordering: true,
@@ -95,7 +97,7 @@
             scrollY: true,
             "lengthMenu": [[10, 15, 20, 50, 100, -1], [10, 15, 20, 50, 100, "All"]],
             "ajax": {
-                url: "@Url.Action("ListOverbakeLogs", "OverbakeLogs")",
+                url : "@Url.Action("ListOverbakeLogsWithDateRange", "OverbakeLogs")" + "?fechaInicio=" + dates['lastWeek'] + "&fechaFin=" + dates['tomorrow'],
                 type: "GET",
                 datatype: "json",
                 contentType: "application/json; charset=utf-8",
@@ -109,7 +111,6 @@
                 { "data": "Message" },
                 {
                     "defaultContent":
-                        '<button type="button" class="editButton btn btn-info btn-sm p-2 mx-1"><i class="fas fa-pen"></i></button>' +
                         '<button type="button" class="deleteButton btn btn-danger btn-sm p-2 mx-1"><i class="fas fa-trash"></i></button>',
                     "orderable": false,
                     "searchable": false,

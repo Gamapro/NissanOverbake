@@ -20,6 +20,7 @@ namespace NissanOverbake
                         "~/Scripts/chart.min.js",
                         "~/Scripts/Charts.min.js",
                         "~/Scripts/chart.js",
+                        "~/Scripts/dates.js",
                         "~/Scripts/jquery-validate.js",
                         "~/Scripts/jquery-ui.js",
                         "~/Scripts/scripts.js"));
