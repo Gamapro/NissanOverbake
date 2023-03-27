@@ -70,7 +70,7 @@ namespace DataLayer
             {
                 using (MySqlConnection connection = new MySqlConnection(Conection.cn))
                 {
-                    string query = String.Format("insert into logs (time, plcId, serialNumber, status, message) values ('{0}', {1}, '{2}', {3}, '{4}');", log.Time, log.PlcId, log.SerialNumber, log.Status, log.Message);
+                    string query = String.Format("insert into logs (time, plcId, serialNumber, status, message) values ('{0}', {1}, '{2}', '{3}', '{4}');", log.Time, log.PlcId, log.SerialNumber, log.Status, log.Message);
                     Debug.WriteLine("QUERY InsertOverbakeLog ", query);
                     using (MySqlCommand cmd = new MySqlCommand(query, connection))
                     {
