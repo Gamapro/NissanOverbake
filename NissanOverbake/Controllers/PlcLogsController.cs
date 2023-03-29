@@ -19,14 +19,14 @@ namespace NissanOverbake.Controllers
         
         //// ############################## PLC LOGS ##################################
 
-        [HttpGet]
+        [HttpPost]
         public ActionResult ListPlcLogs()
         {
             List<PlcLog> list = new List<PlcLog>();
             list = PlcLogsApi.ListLogs();
             return Json(new { data = list }, JsonRequestBehavior.AllowGet);
         }
-        [HttpGet]
+        [HttpPost]
         public ActionResult ListPlcLogsWithDateRange(string fechaInicio, string fechaFin)
         {
             List<PlcLog> list = new List<PlcLog>();

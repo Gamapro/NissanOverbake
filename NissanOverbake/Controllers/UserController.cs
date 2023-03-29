@@ -16,7 +16,7 @@ namespace NissanOverbake.Controllers
             return View();
         }
         // ######################## JSON HTTP REQUESTS ########################
-        [HttpGet]
+        [HttpPost]
         public ActionResult ListUsers()
         {
             List<User> list = new List<User>();

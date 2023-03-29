@@ -16,7 +16,7 @@ namespace NissanOverbake.Controllers
             return View();
         }
         //// ################################ PLCS ####################################
-        [HttpGet]
+        [HttpPost]
         public ActionResult ListPlcs()
         {
             List<Plc> list = new List<Plc>();

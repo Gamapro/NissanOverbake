@@ -17,40 +17,50 @@
         <li class="breadcrumb-item">OVERBAKE CONTROL</li>
         <li class="breadcrumb-item active">Charts</li>
     </ol>
-    <div class="card mb-4">
-        <div class="card-header">
-            <ul class="navbar-nav">
-                <li class="nav-item">
-                    <i class="fas fa-chart-area me-1"></i> Overbaked pieces by
-                </li>
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Select filter</a>
-                    <ul class="dropdown-menu dropdown-menu-lg-start" aria-labelledby="navbarDropdown">
-                        <li><a class="dropdown-item" href="#">Week</a></li>
-                        <li><hr class="dropdown-divider" /></li>
-                        <li><a class="dropdown-item" href="#">Month</a></li>
-                        <li><hr class="dropdown-divider" /></li>
-                        <li><a class="dropdown-item" href="#">Year</a></li>
-                    </ul>
-                </li>
-            </ul>
+
+    <div class="row align-items-center py-1">
+        <div class="card mb-4">
+
+            <div class="card-header">
+                <div class="row align-items-center py-1">
+                    <div class="col">
+                        <i class="fas fa-chart-bar me-1"></i>
+                        Piezas por PLC Anual
+                    </div>
+                    <div class="col-sm-1">
+                        <label class="form-label">Seleccione Año</label>
+                    </div>
+                    <div class="col-sm-3">
+                        <div id="yearDropdown"></div>
+                    </div>
+                    <div class="col-sm-1">
+                        <label class="form-label">Seleccione PLC</label>
+                    </div>
+                    <div class="col-sm-3">
+                        <div id="plcDropdown"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card-body" id="myBarChartDiv"></div>
+            <div class="card-footer small text-muted" id="myBarChartFooter"></div>
+            
         </div>
-        <div class="card-body"><canvas id="myAreaChart" width="100" height="30"></canvas></div>
-        <div class="card-footer small text-muted">Updated yesterday at 11:59 PM</div>
     </div>
-    <div class="row">
-        <div class="col-lg-6">
+
+    <div class="row align-items-center py-1">
+        <div class="col-lg-8">
             <div class="card mb-4">
                 <div class="card-header">
                     <i class="fas fa-chart-bar me-1"></i>
-                    Overbaked pieces by month
+                    Total piezas Anual
                 </div>
-                <div class="card-body"><canvas id="myBarChart" width="100" height="50"></canvas></div>
-                <div class="card-footer small text-muted">Updated yesterday at 11:59 PM</div>
+                <div class="card-body" id="allBarDiv"></div>
+                <div class="card-footer small text-muted" id="allBarFooter"></div>
             </div>
         </div>
-        <div class="col-lg-6">
-            <div class="card mb-4">
+        <div class="col-sm-4">
+            <div class="card mb-2">
                 <div class="card-header">
                     <div class="row align-items-center py-1">
                         <div class="col-sm-3">
@@ -126,93 +136,216 @@
     });
 
     $("#btnClearChart").click();
-    
-    var ctx = document.getElementById("myAreaChart");
 
+    fillYearDropdown();
+    fillPlcDropdown();
 
-    var ctx = document.getElementById("myBarChart");
-    var myLineChart = new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: ["January", "February", "March", "April", "May", "June"],
-            datasets: [{
-                label: "Revenue",
-                backgroundColor: "rgba(2,117,216,1)",
-                borderColor: "rgba(2,117,216,1)",
-                data: [421, 531, 625, 784, 982, 484],
-            }],
-        },
-        options: {
-            scales: {
-                xAxes: [{
-                    time: {
-                        unit: 'month'
-                    },
-                    gridLines: {
-                        display: false
-                    },
-                    ticks: {
-                        maxTicksLimit: 6
-                    }
-                }],
-                yAxes: [{
-                    ticks: {
-                        min: 0,
-                        max: 1000,
-                        maxTicksLimit: 5
-                    },
-                    gridLines: {
-                        display: true
-                    }
-                }],
+    function fillYearDropdown(){
+        $.ajax({
+            url: "@Url.Action("GetLogYears","OverbakeLogs")",
+            type: 'POST',
+            success: function (data) {
+                data = data['data'];
+                var yearDropdown = document.getElementById("yearDropdown");
+                var select = document.createElement("select");
+                select.setAttribute("id", "yearDropdownSelect");
+                select.setAttribute("class", "form-control");
+                select.setAttribute("onchange", "fillBarChart(this.value)");
+                for (var i = 0; i < data.length; i++) {
+                    console.log(data[i]);
+                    var value = data[i].toString();
+                    var option = document.createElement("option");
+                    option.setAttribute("value", value);
+                    option.innerHTML = value;
+                    select.appendChild(option);
+                }
+                yearDropdown.appendChild(select);
+                // current select current year
+                var year = new Date().getFullYear();
+                $("#yearDropdownSelect").val(year);
+                fillBarChart(year);
+            }
+        });
+    }
+
+    function fillPlcDropdown(){
+        $.ajax({
+            url: "@Url.Action("ListPlcs","Plc")",
+            type: 'POST',
+            success: function (data) {
+                data = data['data'];
+                var plcDropdown = document.getElementById("plcDropdown");
+                var select = document.createElement("select");
+                select.setAttribute("id", "plcDropdownSelect");
+                select.setAttribute("class", "form-control");
+                select.setAttribute("onchange", "setAsHiddenIfDiferentId(this.value)");
+                var option = document.createElement("option");
+                option.setAttribute("value", -1);
+                option.innerHTML = "All";
+                select.appendChild(option);
+                for (var i = 0; i < data.length; i++) {
+                    var option = document.createElement("option");
+                    option.setAttribute("value", data[i]['Id']);
+                    option.innerHTML = data[i]['Name'];
+                    select.appendChild(option);
+                }
+                plcDropdown.appendChild(select);
+            }
+        }); 
+    }
+
+    function fillBarChart(year){
+        let usingYear = year;
+        jQuery.ajax({
+            url: "@Url.Action("FilterOverbakeLogsByMonthsWithYear", "OverbakeLogs")",
+            type: "POST",
+            data: { year : year },
+            datatype: "json",
+            success: function (data) {
+                var dataset = data['data'];
+
+                var canvasId = createCanvasById("allBarDiv");
+                var plotDataset = getPlotDatasetByKey(dataset, true);
+                setBarChart("allBarDiv", plotDataset, canvasId);
+
+                var canvasId = createCanvasById("myBarChartDiv");
+                var plotDataset = getPlotDatasetByKey(dataset, false);
+                setBarChart("myBarChartDiv", plotDataset, canvasId);
+                
+                var footer = document.getElementById("myBarChartFooter");
+                footer.innerHTML = "Actualizado a " + usingYear;
+                var footer = document.getElementById("allBarFooter");
+                footer.innerHTML = "Actualizado a " + usingYear;
             },
-            legend: {
-                display: false
+            error: function (error) {
+                console.log(error);
+            }
+        });
+    }
+
+    function createCanvasById(id){
+        var div = document.getElementById(id);
+        if (div.getElementsByTagName("canvas").length > 0) {
+            div.removeChild(div.getElementsByTagName("canvas")[0]);
+        }
+        var canvas = document.createElement("canvas");
+        var canvasId = id + "Canvas";
+        canvas.setAttribute("id", canvasId);
+        div.appendChild(canvas);
+        return canvasId;
+    }
+
+    function getPlotDatasetByKey(dataset, all=false){
+        
+        var labels = [], data = [], colors = [], plotDataset = [];
+        var dictionary = {};
+        for (var i = 0; i < dataset.length; i++) {
+            if(all == true){
+                var key = dataset[i]['Year'] + '-' + dataset[i]['Status'];
+            }else{
+                var key = dataset[i]['Year'] + '-' + dataset[i]['Status'] + '-' + dataset[i]['PlcName'];
+            }
+            if (dictionary[key] == undefined) {
+                dictionary[key] = [];
+            }
+            dictionary[key].push(dataset[i]);
+        }
+        var i = 0;
+        for (var key in dictionary) {
+            var label = dictionary[key][0]['Status'];
+            var plcId = dictionary[key][0]['PlcId'];
+            var data = [];
+            for (var j = 0; j < dictionary[key].length; j++) {
+                data.push(0);
+                for(var k = 0; k < dictionary[key][j]['Count']; k++){
+                    data[dictionary[key][j]['Month'] - 1]++;
+                }
+            }
+            var color = label == 'G' ? '#28a745' : '#dc3545';
+            var plot = {
+                label: plcId + ' ' + label,
+                backgroundColor: color,
+                borderColor: color,
+                data: data,
+                fill: false,
+            };
+            plotDataset.push(plot);
+            i++;
+        }
+        return plotDataset;
+    }
+
+    function setBarChart(ctxId, plotDataset, canvasId){
+        var ctx = document.getElementById(canvasId);
+        var myLineChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"],
+                datasets: plotDataset
+            },
+            options: {
+                legend: {
+                    display: true
+                }
+            }
+        });
+    }
+
+    function setAsHiddenIfDiferentId(id){
+        // var chart = Chart.instances[2];
+        const chart = Chart.getChart('myBarChartDivCanvas');
+        var datasets = chart.data.datasets;
+        for (var i = 0; i < datasets.length; i++) {
+            var plcId = datasets[i].label.split(' ')[0];
+            if (id != -1 && plcId != id) {
+                datasets[i].hidden = true;
+            } else {
+                datasets[i].hidden = false;
             }
         }
-    });
+        chart.update();
+    }
     
     function fillPieChart(fechaInicio, fechaFin){
         jQuery.ajax({
-            url: "@Url.Action("ListOverbakeLogsWithDateRange", "OverbakeLogs")",
-            type: "GET",
+            url: "@Url.Action("FilterOverbakeLogsWithDateRangeAndStatus", "OverbakeLogs")",
+            type: "POST",
             data: { fechaInicio: fechaInicio, fechaFin: fechaFin },
             datatype: "json",
-            contentType: "application/json; charset=utf-8",
             success: function (data) {
-                console.log(data);
-                var plcIds = {}, color = 0, labels = [], dataset = [], backgroundColor = [];
+
+                var color = 0, labels = [], dataset = [], backgroundColor = [];
                 for (var i = 0; i < data['data'].length; i++) {
-                    var plcId = data['data'][i].PlcName;
-                    if (plcIds[plcId] == undefined) {
-                        plcIds[plcId] = {
-                            label: data['data'][i].PlcName,
-                            data: 1,
-                            backgroundColor: backgroundColors[color++]
-                        };
-                    } else {
-                        plcIds[plcId].data++;
-                    }
+                    labels.push(data['data'][i]['PlcName'] + ' ' + data['data'][i]['Status']);
+                    dataset.push(data['data'][i]['Count']);
+                    backgroundColor.push(backgroundColors[color]);
+                    color = (color + 1) % backgroundColors.length;
                 }
-                for (var key in plcIds) {
-                    labels.push(plcIds[key].label);
-                    dataset.push(plcIds[key].data);
-                    backgroundColor.push(plcIds[key].backgroundColor);
-                }
+
                 var div = document.getElementById("myPieChartDiv");
                 if (div.getElementsByTagName("canvas").length > 0) {
                     div.removeChild(div.getElementsByTagName("canvas")[0]);
                 }
                 var canvas = document.createElement("canvas");
-                canvas.setAttribute("id", "myPieChart");
+                canvas.setAttribute("id", "myPieChartCanvas");
                 div.appendChild(canvas);
-                var ctx = document.getElementById("myPieChart");
-                var myPieChart = new Chart(ctx, {
-                    type: 'pie',
-                    data: { labels: labels, datasets: [{ data: dataset, backgroundColor: backgroundColor }], },
-                });
+                var ctx = document.getElementById("myPieChartCanvas");
+
+                if(dataset.length != 0){
+                    var myPieChart = new Chart(ctx, {
+                        type: 'pie',
+                        data: { labels: labels, datasets: [{ data: dataset, backgroundColor: backgroundColor }], },
+                    });
+                }else{
+                    var myPieChart = new Chart(ctx, {
+                        type: 'pie',
+                        data: { labels: ["No hay datos disponibles por hoy"], datasets: [{ data: [1], backgroundColor: ["#6c757d"] }] },
+                    });
+                }
+
                 var footer = document.getElementById("myPieChartFooter");
                 footer.innerHTML = "Actualizado entre " + formatDateWithNames(fechaInicio) + " a " + formatDateWithNames(fechaFin);
+
             },
             error: function (error) {
                 console.log(error);

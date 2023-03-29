@@ -173,6 +173,7 @@
   <ItemGroup>
     <Compile Include="Credentials.cs" />
     <Compile Include="Log.cs" />
+    <Compile Include="LogCount.cs" />
     <Compile Include="OverbakeLog.cs" />
     <Compile Include="Plc.cs" />
     <Compile Include="PlcLog.cs" />

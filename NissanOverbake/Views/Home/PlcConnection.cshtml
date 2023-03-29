@@ -57,7 +57,7 @@
         function updateConnection() {
             $.ajax({
                 url: "@Url.Action("ListPlcs","Plc")",
-                type: 'GET',
+                type: 'POST',
                 success: function (data) {
                     console.log("Limpiando y conectando");
                     $('#cardSpace').empty();

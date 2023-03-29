@@ -55,6 +55,12 @@ function getDates(){
     var lastMonth = formatDate(lastMonth);
     var lastYear = formatDate(lastYear);
 
+    // current year
+    var currentYear = new Date().getFullYear();
+
+    // current month
+    var currentMonth = new Date().getMonth() + 1;
+
     return {
         today: currentDate,
         tomorrow: tomorrow,
@@ -73,6 +79,8 @@ function getDates(){
         yesterdayWithNames: formatDateWithNames(new Date(yesterday)),
         lastWeekWithNames: formatDateWithNames(new Date(lastWeek)),
         lastMonthWithNames: formatDateWithNames(new Date(lastMonth)),
-        lastYearWithNames: formatDateWithNames(new Date(lastYear))
+        lastYearWithNames: formatDateWithNames(new Date(lastYear)),
+        currentYear: currentYear,
+        currentMonth: currentMonth
     }
 }

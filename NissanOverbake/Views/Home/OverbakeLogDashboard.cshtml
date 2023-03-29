@@ -98,7 +98,7 @@
             "lengthMenu": [[10, 15, 20, 50, 100, -1], [10, 15, 20, 50, 100, "All"]],
             "ajax": {
                 url : "@Url.Action("ListOverbakeLogsWithDateRange", "OverbakeLogs")" + "?fechaInicio=" + dates['lastWeek'] + "&fechaFin=" + dates['tomorrow'],
-                type: "GET",
+                type: "POST",
                 datatype: "json",
                 contentType: "application/json; charset=utf-8",
             },
