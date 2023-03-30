@@ -34,6 +34,12 @@ namespace NissanOverbake.Controllers
             Debug.WriteLine("User token ", getToken());
             return UsersApi.IsAdmin(getToken());
         }
+        [HttpPost]
+        private ActionResult IsAdminByToken(string token)
+        {
+            bool isAdmin = UsersApi.IsAdmin(token);
+            return Json(new { isAdmin = isAdmin }, JsonRequestBehavior.AllowGet);
+        }        
         [OutputCache(NoStore = true, Duration = 0, VaryByParam = "*")]
         public ActionResult UsersDashboard()
         {
@@ -49,7 +55,7 @@ namespace NissanOverbake.Controllers
         [OutputCache(NoStore = true, Duration = 0, VaryByParam = "*")]
         public ActionResult OverbakeLogDashboard()
         {
-            if (!checkToken() || !checkUserCredentials()) return View("~/Views/Shared/AccessDenied.cshtml", "~/Views/Shared/_Layout.cshtml");
+            if (!checkToken()) return View("~/Views/Shared/AccessDenied.cshtml", "~/Views/Shared/_Layout.cshtml");
             return View("OverbakeLogDashboard", "~/Views/Shared/_Layout.cshtml", null);
         }
         [OutputCache(NoStore = true, Duration = 0, VaryByParam = "*")]
@@ -61,7 +67,7 @@ namespace NissanOverbake.Controllers
         [OutputCache(NoStore = true, Duration = 0, VaryByParam = "*")]
         public ActionResult PlcLogDashboard()
         {
-            if (!checkToken() || !checkUserCredentials()) return View("~/Views/Shared/AccessDenied.cshtml", "~/Views/Shared/_Layout.cshtml");
+            if (!checkToken()) return View("~/Views/Shared/AccessDenied.cshtml", "~/Views/Shared/_Layout.cshtml");
             return View("PlcLogDashboard", "~/Views/Shared/_Layout.cshtml", null);
         }
     }

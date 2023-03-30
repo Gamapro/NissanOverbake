@@ -55,7 +55,7 @@
                     <tr>
                         <th>ID</th>
                         <th>Registro de tiempo</th>
-                        <th>Plc Nombre</th>
+                        <th>Horno</th>
                         <th>Mensaje</th>
                         <th></th>
                     </tr>
@@ -64,7 +64,7 @@
                     <tr>
                         <th>ID</th>
                         <th>Registro de tiempo</th>
-                        <th>Plc Nombre</th>
+                        <th>Horno</th>
                         <th>Mensaje</th>
                         <th></th>
                     </tr>
@@ -173,39 +173,56 @@
 
             console.log(logInfo);
 
-            swal({
-                title: "Estas seguro que quieres eliminar este registro?",
-                text: "ID: " + logInfo.Id,
-                type: "warning",
-                showCancelButton: true,
-                confirmButtonClass: "btn-success",
-                confirmButtonText: "Si",
-                cancelButtonText: "No",
-                closeOnConfirm: false,
-                closeOnCancel: true
-            }, function () {
+            let admin = '@System.Web.HttpContext.Current.Session["isAdmin"]';
+            console.log("IsAdmin", admin);
 
-                jQuery.ajax({
-                    url: "@Url.Action("DeletePlcLog", "PlcLogs")",
-                    type: "POST",
-                    data: JSON.stringify({ log: logInfo }),
-                    datatype: "json",
-                    contentType: "application/json; charset=utf-8",
-                    success: function (data) {
-                        if (data.excecuted) {
-                            table.row(row).remove().draw();
-                            swal("Deleted!", data.message, "success");
-                        } else {
-                            swal("Error", data.message, "error");
+            if(admin == "False"){
+                swal({
+                    title: "Error",
+                    text: "No tiene permiso de editar",
+                    type: "error",
+                    confirmButtonClass: "btn-primary",
+                    confirmButtonText: "Ok",
+                    closeOnConfirm: true
+                });
+            }else{
+
+                swal({
+                    title: "Estas seguro que quieres eliminar este registro?",
+                    text: "ID: " + logInfo.Id,
+                    type: "warning",
+                    showCancelButton: true,
+                    confirmButtonClass: "btn-success",
+                    confirmButtonText: "Si",
+                    cancelButtonText: "No",
+                    closeOnConfirm: false,
+                    closeOnCancel: true
+                }, function () {
+
+                    jQuery.ajax({
+                        url: "@Url.Action("DeletePlcLog", "PlcLogs")",
+                        type: "POST",
+                        data: JSON.stringify({ log: logInfo }),
+                        datatype: "json",
+                        contentType: "application/json; charset=utf-8",
+                        success: function (data) {
+                            if (data.excecuted) {
+                                table.row(row).remove().draw();
+                                swal("Deleted!", data.message, "success");
+                            } else {
+                                swal("Error", data.message, "error");
+                            }
+                        },
+                        error: function (error) {
+                            swal("Error", "Hubo un error al remover el registro", "error");
+                            console.log(error);
                         }
-                    },
-                    error: function (error) {
-                        swal("Error", "Hubo un error al remover el registro", "error");
-                        console.log(error);
-                    }
-                })
+                    })
 
-            });
+                });
+
+            }
+
         });
 
     </script>

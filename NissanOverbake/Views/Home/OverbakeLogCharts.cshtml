@@ -152,7 +152,6 @@
                 select.setAttribute("class", "form-control");
                 select.setAttribute("onchange", "fillBarChart(this.value)");
                 for (var i = 0; i < data.length; i++) {
-                    console.log(data[i]);
                     var value = data[i].toString();
                     var option = document.createElement("option");
                     option.setAttribute("value", value);
@@ -160,7 +159,6 @@
                     select.appendChild(option);
                 }
                 yearDropdown.appendChild(select);
-                // current select current year
                 var year = new Date().getFullYear();
                 $("#yearDropdownSelect").val(year);
                 fillBarChart(year);

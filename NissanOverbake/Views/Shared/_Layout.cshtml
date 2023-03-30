@@ -55,11 +55,13 @@
                             <div class="sb-nav-link-icon"><i class="fas fa-table"></i></div>
                             Dashboard
                         </a>
-                        <div class="sb-sidenav-menu-heading">Administrador</div>
-                        <a class="nav-link" href="@Url.Action("UsersDashboard","Home")">
-                            <div class="sb-nav-link-icon"><i class="fas fa-users fa-users-cog"></i></div>
-                            Usuarios
-                        </a>
+                        <div id="AdminPage">
+                            <div class="sb-sidenav-menu-heading">Administrador</div>
+                            <a class="nav-link" href="@Url.Action("UsersDashboard","Home")">
+                                <div class="sb-nav-link-icon"><i class="fas fa-users fa-users-cog"></i></div>
+                                Usuarios
+                            </a>
+                        </div>
                     </div>
                 </div>
                 <div class="sb-sidenav-footer">
@@ -94,15 +96,37 @@
             let message = 'nel wey';
             swal("Error", message, "error");
             window.location.href = "@Url.Action("Index", "Access")";
+
         </script>
     }
     else
     {
         <script>
-            console.log('ahhhhhhhhh diossssss amoooor');
             let token = '@System.Web.HttpContext.Current.Session["token"]';
-            console.log(token);
+            //console.log(token);
+
+            let admin = '@System.Web.HttpContext.Current.Session["isAdmin"]';
+            //console.log("IsAdmin", admin);
+
+            if(admin == "False"){
+                //console.log("es para mi");
+                let div = document.getElementById("AdminPage");
+                div.hidden = true;
+            }
+
         </script>
+
+
+        /*
+
+        
+
+            if (data.excecuted) {
+                        swal("Deleted!", data.message, "success");
+                    } else {
+                        swal("Error", data.message, "error");
+                    }
+        */  
     }
 
 </body>

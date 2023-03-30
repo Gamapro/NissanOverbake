@@ -36,7 +36,8 @@ namespace NissanOverbake.Controllers
             {
                 System.Web.HttpContext.Current.Session["token"] = token;
                 System.Web.HttpContext.Current.Session["username"] = name;
-                return RedirectToAction("UsersDashboard", "Home");
+                System.Web.HttpContext.Current.Session["isAdmin"] = UsersApi.IsAdmin(token);
+                return RedirectToAction("OverbakeLogCharts", "Home");
             }
             Debug.WriteLine("Message", message);
             System.Web.HttpContext.Current.Session["validation_message"] = message;

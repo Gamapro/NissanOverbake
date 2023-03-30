@@ -31,7 +31,7 @@
 
                                         <div class="form-group form-floating mb-3">
                                             <input class="form-control" id="inputUsername" name="name" type="text" placeholder="Username" />
-                                            <label for="inputUsername">Username</label>
+                                            <label for="inputUsername">Usuario</label>
                                         </div>
 
                                         <div class="form-group form-floating mb-3">
@@ -116,7 +116,7 @@
                     success: function (data) {
                         console.log(data);
                         if (data['excecuted'] == true) {
-                            console.log(data['message']);
+                            // console.log(data['message']);
                             setCookie("Token", data["token"], 1);
                         } else {
                             swal("Error", data['message'], "error");
@@ -127,10 +127,9 @@
                         console.log(error);
                     },
                 });
-                console.log("Out Cookie", getCookie("Token"));
+                // console.log("Out Cookie", getCookie("Token"));
                 return false;
             } catch (error) {
-                console.log("JQuery Error");
                 console.log(error);
             }
         }
