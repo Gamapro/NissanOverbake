@@ -45,10 +45,10 @@ create table plcs(
 	lastConection datetime
 );
 
-insert into plcs(id, name, enabled, lastConection) values (1, "top-coat-1", 1, '2022-01-01 01:23:45'),
-(2, "top-coat-2", 0, '2022-01-02 01:23:45'),
-(3, "top-coat-3", 1, '2022-01-03 01:23:45'),
-(4, "top-coat-4", 0, '2022-01-04 01:23:45');
+insert into plcs(id, name, enabled, lastConection) values (1, "ED", 0, '2022-01-01 01:23:45'),
+(2, "FILLER", 0, '2022-01-01 01:23:45'),
+(3, "TOP-COAT 1", 0, '2022-01-01 01:23:45'),
+(4, "TOP-COAT 2", 0, '2022-01-01 01:23:45');
 
 -- insert into plcs(id, name, enabled) values (5, "top-coat-prueba", 0);
 -- update plcs set enabled=0 where id=5;
