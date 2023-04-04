@@ -33,25 +33,23 @@
                 <thead>
                     <tr>
                         <th>ID</th>
-                        <th>User Type</th>
-                        <th>User</th>
+                        <th>Tipo de usuario</th>
+                        <th>Usuario</th>
                         <th>Password</th>
-                        <th>Name</th>
-                        <th>Last Name</th>
-                        <th>Token</th>
-                        <th>Edit</th>
+                        <th>Nombre(s)</th>
+                        <th>Apellido(s)</th>
+                        <th>Editar</th>
                     </tr>
                 </thead>
                 <tfoot>
                     <tr>
                         <th>ID</th>
-                        <th>User Type</th>
-                        <th>User</th>
+                        <th>Tipo de usuario</th>
+                        <th>Usuario</th>
                         <th>Password</th>
-                        <th>Name</th>
-                        <th>Last Name</th>
-                        <th>Token</th>
-                        <th>Edit</th>
+                        <th>Nombre(s)</th>
+                        <th>Apellido(s)</th>
+                        <th>Editar</th>
                     </tr>
                 </tfoot>
                 <tbody>
@@ -164,7 +162,6 @@
             { "data": "Password" },
             { "data": "Name" },
             { "data": "LastName" },
-            { "data": "Token" },
             {
                 "defaultContent":
                     '<button type="button" class="editButton btn btn-info btn-sm p-2 mx-1"><i class="fas fa-pen"></i></button>' +
@@ -178,7 +175,7 @@
         },
         'columnDefs': [
             {
-                "targets": [0,1,6,7],
+                "targets": [0,1,6],
                 "className": "text-center",
             },
         ],

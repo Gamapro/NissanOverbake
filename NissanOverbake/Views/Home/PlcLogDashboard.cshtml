@@ -69,8 +69,6 @@
                         <th></th>
                     </tr>
                 </tfoot>
-                <tbody>
-                </tbody>
             </table>
         </div>
     </div>
@@ -101,11 +99,10 @@
                 { "data": "PlcName" },
                 { "data": "Message" },
                 {
-                    "defaultContent":
-                        // '<button type="button" class="editButton btn btn-info btn-sm p-2 mx-1"><i class="fas fa-pen"></i></button>' +
-                        '<button type="button" class="deleteButton btn btn-danger btn-sm p-2 mx-1"><i class="fas fa-trash"></i></button>',
+                    "defaultContent": '<button type="button" class="deleteButton btn btn-danger btn-sm p-2 mx-1"><i class="fas fa-trash"></i></button>',
                     "orderable": false,
                     "searchable": false,
+                    "visible": @((bool)System.Web.HttpContext.Current.Session["isAdmin"] ? "true" : "false")
                 }
             ],
             language: {
@@ -113,7 +110,7 @@
             },
             'columnDefs': [
                 {
-                    "targets": [0,1,2,,3,4],
+                    "targets": [0,1,2,3,4],
                     "className": "text-center",
                 },
             ],
@@ -165,65 +162,42 @@
             }
         });
 
-
         $("#userDataTable tbody").on("click", '.deleteButton', function () {
-
             row = $(this).closest("tr");
-            var logInfo = table.row(row).data();
-
-            console.log(logInfo);
-
-            let admin = '@System.Web.HttpContext.Current.Session["isAdmin"]';
-            console.log("IsAdmin", admin);
-
-            if(admin == "False"){
-                swal({
-                    title: "Error",
-                    text: "No tiene permiso de editar",
-                    type: "error",
-                    confirmButtonClass: "btn-primary",
-                    confirmButtonText: "Ok",
-                    closeOnConfirm: true
-                });
-            }else{
-
-                swal({
-                    title: "Estas seguro que quieres eliminar este registro?",
-                    text: "ID: " + logInfo.Id,
-                    type: "warning",
-                    showCancelButton: true,
-                    confirmButtonClass: "btn-success",
-                    confirmButtonText: "Si",
-                    cancelButtonText: "No",
-                    closeOnConfirm: false,
-                    closeOnCancel: true
-                }, function () {
-
-                    jQuery.ajax({
-                        url: "@Url.Action("DeletePlcLog", "PlcLogs")",
-                        type: "POST",
-                        data: JSON.stringify({ log: logInfo }),
-                        datatype: "json",
-                        contentType: "application/json; charset=utf-8",
-                        success: function (data) {
-                            if (data.excecuted) {
-                                table.row(row).remove().draw();
-                                swal("Deleted!", data.message, "success");
-                            } else {
-                                swal("Error", data.message, "error");
-                            }
-                        },
-                        error: function (error) {
-                            swal("Error", "Hubo un error al remover el registro", "error");
-                            console.log(error);
+            var logInfo = table.row(row).data()
+            swal({
+                title: "Estas seguro que quieres eliminar este registro?",
+                text: "ID: " + logInfo.Id,
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonClass: "btn-success",
+                confirmButtonText: "Si",
+                cancelButtonText: "No",
+                closeOnConfirm: false,
+                closeOnCancel: true
+            }, function () {
+                jQuery.ajax({
+                    url: "@Url.Action("DeletePlcLog", "PlcLogs")",
+                    type: "POST",
+                    data: JSON.stringify({ log: logInfo }),
+                    datatype: "json",
+                    contentType: "application/json; charset=utf-8",
+                    success: function (data) {
+                        if (data.excecuted) {
+                            table.row(row).remove().draw();
+                            swal("Deleted!", data.message, "success");
+                        } else {
+                            swal("Error", data.message, "error");
                         }
-                    })
-
-                });
-
-            }
-
+                    },
+                    error: function (error) {
+                        swal("Error", "Hubo un error al remover el registro", "error");
+                        console.log(error);
+                    }
+                })
+            });
         });
+
 
     </script>
 
