@@ -29,13 +29,13 @@ namespace DataLayer
                     string query = "";
                     if (String.IsNullOrEmpty(fechaInicio) || String.IsNullOrEmpty(fechaFin))
                     {
-                        query = "select pl.id, pl.time, p.name, pl.message from plclogs pl join plcs p on p.id = pl.plcId order by pl.time limit 10000;";
+                        query = "select pl.id, pl.time, p.name, pl.message from plclogs pl join plcs p on p.id = pl.plcId order by pl.time asc limit 30;";
                     }
                     else
                     {
                         fechaInicio = FormatToDate(fechaInicio);
                         fechaFin = FormatToDate(fechaFin);
-                        query = String.Format("select pl.id, pl.time, p.name, pl.message from plclogs pl join plcs p on p.id = pl.plcId where pl.time between'{0}' and '{1}' order by pl.time limit 10000;", fechaInicio, fechaFin);
+                        query = String.Format("select pl.id, pl.time, p.name, pl.message from plclogs pl join plcs p on p.id = pl.plcId where pl.time between'{0}' and '{1}' order by pl.time asc limit 30;", fechaInicio, fechaFin);
                     }
                     Debug.WriteLine("QUERY ListLogs ", query);
                     using (MySqlCommand cmd = new MySqlCommand(query, connection))
